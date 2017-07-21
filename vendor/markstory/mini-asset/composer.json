@@ -1,0 +1,47 @@
+{
+  "name": "markstory/mini-asset",
+  "description": "An asset compression library. Provides file concatenation and a flexible filter system for preprocessing and minification.",
+  "type": "cakephp-plugin",
+  "keywords": ["cakephp", "assets", "minifier", "less", "coffee-script", "sass", "psr7"],
+  "homepage": "https://github.com/markstory/mini-asset",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Mark Story",
+      "homepage": "http://mark-story.com",
+      "role": "Author"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/markstory/mini-asset/issues",
+    "source": "https://github.com/markstory/mini-asset"
+  },
+  "require": {
+    "php": ">=5.6.0",
+    "league/climate": "~3.0"
+  },
+  "require-dev": {
+    "squizlabs/PHP_CodeSniffer": "*",
+    "zendframework/zend-diactoros": "~1.0",
+    "phpunit/phpunit": "^5.7 | ^6.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "MiniAsset\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "MiniAsset\\Test\\": "tests"
+    }
+  },
+  "bin": ["bin/mini_asset"],
+  "suggest": {
+    "natxet/CssMin": "For using the CssMin filter.",
+    "tchwork/jsqueeze": "For using the JSqueeze filter.",
+    "tedivm/jshrink": "For using the JShrink filter.",
+    "leafo/scssphp": "For using the ScssPHP filter.",
+    "oyejorge/less.php": "For using the LessDotPHP filter, see https://github.com/oyejorge/less.php",
+    "zendframework/diactoros": "The middleware layer relies on zendframework/diactoros."
+  }
+}

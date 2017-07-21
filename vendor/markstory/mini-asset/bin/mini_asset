@@ -1,0 +1,38 @@
+#!/usr/bin/php
+<?php
+/**
+ * MiniAsset
+ * Copyright (c) Mark Story (http://mark-story.com)
+ *
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) Mark Story (http://mark-story.com)
+ * @since         0.0.1
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
+
+/**
+ * Bin stub for mini_asset.
+ */
+$options = [
+    __DIR__ . '/../../../autoload.php',
+    __DIR__ . '/../../autoload.php',
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/vendor/autoload.php'
+];
+foreach ($options as $file) {
+    if (file_exists($file)) {
+        define('MINIASSET_COMPOSER_INSTALL', $file);
+        break;
+    }
+}
+require MINIASSET_COMPOSER_INSTALL;
+
+$cli = new MiniAsset\Cli\MiniAsset();
+
+// Remove script name.
+array_shift($argv);
+
+exit($cli->main($argv));

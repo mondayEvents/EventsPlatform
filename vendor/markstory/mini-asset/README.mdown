@@ -1,0 +1,135 @@
+# Mini Asset
+
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.txt)
+[![Build Status](https://travis-ci.org/markstory/mini-asset.svg?branch=master)](https://travis-ci.org/markstory/mini-asset)
+[![codecov.io](https://codecov.io/github/markstory/mini-asset/coverage.svg?branch=master)](https://codecov.io/github/markstory/mini-asset?branch=master)
+[![Total Downloads](https://img.shields.io/packagist/dt/markstory/mini-asset.svg?style=flat-square)](https://packagist.org/packages/markstory/mini-asset)
+
+Mini Asset is a small footprint library that provide tools to assist in
+building an asset minification/optimization pipeline. It uses a simple INI
+based configuration file that lets you define output files, that are comprised
+of a number of input files. Input files can be processed by filters on
+a per-extension or per file basis.  Filters allow you to integrate existing
+pre-processors and minifiers or build your own.
+
+## Features
+
+* Built-in support for LESScss, Sass and CoffeeScript, as well as several
+  minifiers.
+* Powerful and flexible filter system allowing you to add your own
+  minifiers/pre-processors.
+* Simple ini configuration files.
+* Incremental builds that don't recompile assets when they don't need to be.
+* Command Line Tools for building and clearing assets.
+
+## Installing
+
+Add this library to your application with composer, after that you can
+start integrating MiniAsset into your application and use the provided CLI tools
+to generate asset targets:
+
+```
+php composer.phar require 'markstory/mini-asset'
+```
+
+## Usage
+
+Before MiniAsset can do anything, you'll need to define a configuration file to
+define your asset and which filters apply to them. For example purposes, we'll assume
+you have some CSS files that need to be minified.
+
+### Defining a configuration file
+
+In your application's configuration directory create a file called
+`assets.ini`. In this file we'll put all the configuration that MiniAsset
+needs. We'll cover how to use multiple configuration files later on. Assuming your,
+application has a `app.css` and `reset.css` put the following in your config file:
+
+```ini
+[css]
+cachePath = WEBROOT/cache_css/
+paths[] = WEBROOT/css/*
+filters[] = SimpleCssMin
+
+[app.css]
+files[] = reset.css
+files[] = app.css
+```
+
+The above also assumes that `WEBROOT` resolves to your application's document
+root. In the above we defined a few sections. First, the `[css]` section defines how all
+CSS files should behave:
+
+* The `cachePath` option tells MiniAsset where to store generated assets.
+* The `paths[]` options tell MiniAsset where to find CSS files. Paths use glob syntax.
+* The `filters[]` options let you configure which filters are applied to all CSS files.
+  Filters are applied in the order they are defined.
+
+We also defined an `[app.css]` section. This section defines the files that are used to
+create `WEBROOT/cache_css/app.css` when it is generated. We've added two files.
+
+See the [sample configuration file](https://github.com/markstory/mini-asset/tree/master/config/assets.sample.ini)
+for an annotated sample configuration file.
+
+### Use the CLI tool to build your asset
+
+With a build target defined, we can now generate our asset. We can use the CLI
+tool to generate our assets:
+
+```sh
+vendor/bin/mini_asset build --config /path/to/assets.ini
+```
+
+The above should generate output indicating that the `all.css` file we defined
+was compiled. If we were to re-run the above command `all.css` would be skipped.
+MiniAsset is smart enough to know when the components of a build target change and
+only re-build files when it is necessary.
+
+You can also use the `mini_asset` CLI tool to clear targets:
+
+```sh
+vendor/bin/mini_asset clear --config /path/to/assets.ini
+```
+
+### PSR7 Middleware
+
+Mini-asset provides a PSR7 middleware adapter that implements the pattern found in
+zendframework/zend-stratagility and SlimPHP. Before you can use the middleware provided by
+mini-asset be sure to setup a config file with your assets. Next, integrate mini-asset into your
+middleware stack. For example in a SlimPHP app you would do:
+
+```php
+use MiniAsset\AssetConfig;
+use MiniAsset\Middleware\AssetMiddleware;
+
+$assetConfig = AssetConfig::buildFromIniFile(__DIR__ . '../config/assets.ini');
+$assets = new AssetMiddleware($assetConfig);
+
+$app->add($assets);
+```
+
+## Framework Integrations
+
+* CakePHP - [AssetCompress plugin](https://github.com/markstory/asset_compress).
+
+## Issues
+
+Please report any issues you have with the plugin to the [issue
+tracker](http://github.com/markstory/mini-asset/issues) on github.
+
+## License
+
+Mini Asset is offered under an [MIT license](http://www.opensource.org/licenses/mit-license.php).
+
+## Copyright
+
+2010-2017 Mark Story (http://mark-story.com)
+
+### Authors
+
+See the [github contributors list](https://github.com/markstory/mini-asset/graphs/contributors).
+
+### Changelog
+
+See CHANGELOG for changes only available on `master`. See
+[github releases](https://github.com/markstory/mini-asset/releases) for changelogs on previous releases.

@@ -1,0 +1,108 @@
+2017-07-21 12:52:25 Error: [Cake\Network\Exception\NotFoundException] Not Found
+Request URL: /pages/not_existing
+Stack Trace:
+#0 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Controller/Controller.php(440): App\Controller\PagesController->display('not_existing')
+#1 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/ActionDispatcher.php(119): Cake\Controller\Controller->invokeAction()
+#2 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/ActionDispatcher.php(93): Cake\Http\ActionDispatcher->_invoke(Object(App\Controller\PagesController))
+#3 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/BaseApplication.php(78): Cake\Http\ActionDispatcher->dispatch(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#4 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Runner.php(65): Cake\Http\BaseApplication->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response), Object(Cake\Http\Runner))
+#5 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Routing/Middleware/RoutingMiddleware.php(59): Cake\Http\Runner->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#6 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Runner.php(65): Cake\Routing\Middleware\RoutingMiddleware->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response), Object(Cake\Http\Runner))
+#7 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Routing/Middleware/AssetMiddleware.php(88): Cake\Http\Runner->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#8 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Runner.php(65): Cake\Routing\Middleware\AssetMiddleware->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response), Object(Cake\Http\Runner))
+#9 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Error/Middleware/ErrorHandlerMiddleware.php(92): Cake\Http\Runner->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#10 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Runner.php(65): Cake\Error\Middleware\ErrorHandlerMiddleware->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response), Object(Cake\Http\Runner))
+#11 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Runner.php(51): Cake\Http\Runner->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#12 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Server.php(80): Cake\Http\Runner->run(Object(Cake\Http\MiddlewareQueue), Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#13 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/TestSuite/MiddlewareDispatcher.php(97): Cake\Http\Server->run(Object(Cake\Http\ServerRequest))
+#14 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/TestSuite/IntegrationTestCase.php(453): Cake\TestSuite\MiddlewareDispatcher->execute(Array)
+#15 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/TestSuite/IntegrationTestCase.php(371): Cake\TestSuite\IntegrationTestCase->_sendRequest('/pages/not_exis...', 'GET')
+#16 /Users/brunoserra/Sites/mondayEvents/tests/TestCase/Controller/PagesControllerTest.php(64): Cake\TestSuite\IntegrationTestCase->get('/pages/not_exis...')
+#17 [internal function]: App\Test\TestCase\Controller\PagesControllerTest->testMissingTemplate()
+#18 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestCase.php(1069): ReflectionMethod->invokeArgs(Object(App\Test\TestCase\Controller\PagesControllerTest), Array)
+#19 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestCase.php(928): PHPUnit\Framework\TestCase->runTest()
+#20 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestResult.php(695): PHPUnit\Framework\TestCase->runBare()
+#21 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestCase.php(883): PHPUnit\Framework\TestResult->run(Object(App\Test\TestCase\Controller\PagesControllerTest))
+#22 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestSuite.php(746): PHPUnit\Framework\TestCase->run(Object(PHPUnit\Framework\TestResult))
+#23 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestSuite.php(746): PHPUnit\Framework\TestSuite->run(Object(PHPUnit\Framework\TestResult))
+#24 phar:///usr/local/bin/phpunit.phar/phpunit/TextUI/TestRunner.php(537): PHPUnit\Framework\TestSuite->run(Object(PHPUnit\Framework\TestResult))
+#25 phar:///usr/local/bin/phpunit.phar/phpunit/TextUI/Command.php(210): PHPUnit\TextUI\TestRunner->doRun(Object(PHPUnit\Framework\TestSuite), Array, true)
+#26 phar:///usr/local/bin/phpunit.phar/phpunit/TextUI/Command.php(141): PHPUnit\TextUI\Command->run(Array, true)
+#27 /usr/local/bin/phpunit.phar(547): PHPUnit\TextUI\Command::main()
+#28 {main}
+
+
+2017-07-21 12:52:25 Error: [Cake\View\Exception\MissingTemplateException] Template file "Pages/not_existing.ctp" is missing.
+Exception Attributes: array (
+  'file' => 'Pages/not_existing.ctp',
+)
+Request URL: /pages/not_existing
+Stack Trace:
+#0 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/View/View.php(606): Cake\View\View->_getViewFileName('Pages/not_exist...')
+#1 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Controller/Controller.php(623): Cake\View\View->render('not_existing', NULL)
+#2 /Users/brunoserra/Sites/mondayEvents/src/Controller/PagesController.php(61): Cake\Controller\Controller->render('not_existing')
+#3 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Controller/Controller.php(440): App\Controller\PagesController->display('not_existing')
+#4 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/ActionDispatcher.php(119): Cake\Controller\Controller->invokeAction()
+#5 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/ActionDispatcher.php(93): Cake\Http\ActionDispatcher->_invoke(Object(App\Controller\PagesController))
+#6 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/BaseApplication.php(78): Cake\Http\ActionDispatcher->dispatch(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#7 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Runner.php(65): Cake\Http\BaseApplication->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response), Object(Cake\Http\Runner))
+#8 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Routing/Middleware/RoutingMiddleware.php(59): Cake\Http\Runner->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#9 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Runner.php(65): Cake\Routing\Middleware\RoutingMiddleware->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response), Object(Cake\Http\Runner))
+#10 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Routing/Middleware/AssetMiddleware.php(88): Cake\Http\Runner->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#11 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Runner.php(65): Cake\Routing\Middleware\AssetMiddleware->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response), Object(Cake\Http\Runner))
+#12 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Error/Middleware/ErrorHandlerMiddleware.php(92): Cake\Http\Runner->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#13 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Runner.php(65): Cake\Error\Middleware\ErrorHandlerMiddleware->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response), Object(Cake\Http\Runner))
+#14 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Runner.php(51): Cake\Http\Runner->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#15 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Server.php(80): Cake\Http\Runner->run(Object(Cake\Http\MiddlewareQueue), Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#16 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/TestSuite/MiddlewareDispatcher.php(97): Cake\Http\Server->run(Object(Cake\Http\ServerRequest))
+#17 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/TestSuite/IntegrationTestCase.php(453): Cake\TestSuite\MiddlewareDispatcher->execute(Array)
+#18 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/TestSuite/IntegrationTestCase.php(371): Cake\TestSuite\IntegrationTestCase->_sendRequest('/pages/not_exis...', 'GET')
+#19 /Users/brunoserra/Sites/mondayEvents/tests/TestCase/Controller/PagesControllerTest.php(78): Cake\TestSuite\IntegrationTestCase->get('/pages/not_exis...')
+#20 [internal function]: App\Test\TestCase\Controller\PagesControllerTest->testMissingTemplateInDebug()
+#21 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestCase.php(1069): ReflectionMethod->invokeArgs(Object(App\Test\TestCase\Controller\PagesControllerTest), Array)
+#22 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestCase.php(928): PHPUnit\Framework\TestCase->runTest()
+#23 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestResult.php(695): PHPUnit\Framework\TestCase->runBare()
+#24 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestCase.php(883): PHPUnit\Framework\TestResult->run(Object(App\Test\TestCase\Controller\PagesControllerTest))
+#25 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestSuite.php(746): PHPUnit\Framework\TestCase->run(Object(PHPUnit\Framework\TestResult))
+#26 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestSuite.php(746): PHPUnit\Framework\TestSuite->run(Object(PHPUnit\Framework\TestResult))
+#27 phar:///usr/local/bin/phpunit.phar/phpunit/TextUI/TestRunner.php(537): PHPUnit\Framework\TestSuite->run(Object(PHPUnit\Framework\TestResult))
+#28 phar:///usr/local/bin/phpunit.phar/phpunit/TextUI/Command.php(210): PHPUnit\TextUI\TestRunner->doRun(Object(PHPUnit\Framework\TestSuite), Array, true)
+#29 phar:///usr/local/bin/phpunit.phar/phpunit/TextUI/Command.php(141): PHPUnit\TextUI\Command->run(Array, true)
+#30 /usr/local/bin/phpunit.phar(547): PHPUnit\TextUI\Command::main()
+#31 {main}
+
+
+2017-07-21 12:52:25 Error: [Cake\Network\Exception\ForbiddenException] Forbidden
+Request URL: /pages/../Layout/ajax
+Stack Trace:
+#0 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Controller/Controller.php(440): App\Controller\PagesController->display('..', 'Layout', 'ajax')
+#1 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/ActionDispatcher.php(119): Cake\Controller\Controller->invokeAction()
+#2 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/ActionDispatcher.php(93): Cake\Http\ActionDispatcher->_invoke(Object(App\Controller\PagesController))
+#3 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/BaseApplication.php(78): Cake\Http\ActionDispatcher->dispatch(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#4 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Runner.php(65): Cake\Http\BaseApplication->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response), Object(Cake\Http\Runner))
+#5 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Routing/Middleware/RoutingMiddleware.php(59): Cake\Http\Runner->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#6 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Runner.php(65): Cake\Routing\Middleware\RoutingMiddleware->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response), Object(Cake\Http\Runner))
+#7 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Routing/Middleware/AssetMiddleware.php(88): Cake\Http\Runner->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#8 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Runner.php(65): Cake\Routing\Middleware\AssetMiddleware->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response), Object(Cake\Http\Runner))
+#9 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Error/Middleware/ErrorHandlerMiddleware.php(92): Cake\Http\Runner->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#10 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Runner.php(65): Cake\Error\Middleware\ErrorHandlerMiddleware->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response), Object(Cake\Http\Runner))
+#11 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Runner.php(51): Cake\Http\Runner->__invoke(Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#12 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/Http/Server.php(80): Cake\Http\Runner->run(Object(Cake\Http\MiddlewareQueue), Object(Cake\Http\ServerRequest), Object(Cake\Http\Response))
+#13 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/TestSuite/MiddlewareDispatcher.php(97): Cake\Http\Server->run(Object(Cake\Http\ServerRequest))
+#14 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/TestSuite/IntegrationTestCase.php(453): Cake\TestSuite\MiddlewareDispatcher->execute(Array)
+#15 /Users/brunoserra/Sites/mondayEvents/vendor/cakephp/cakephp/src/TestSuite/IntegrationTestCase.php(371): Cake\TestSuite\IntegrationTestCase->_sendRequest('/pages/../Layou...', 'GET')
+#16 /Users/brunoserra/Sites/mondayEvents/tests/TestCase/Controller/PagesControllerTest.php(93): Cake\TestSuite\IntegrationTestCase->get('/pages/../Layou...')
+#17 [internal function]: App\Test\TestCase\Controller\PagesControllerTest->testDirectoryTraversalProtection()
+#18 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestCase.php(1069): ReflectionMethod->invokeArgs(Object(App\Test\TestCase\Controller\PagesControllerTest), Array)
+#19 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestCase.php(928): PHPUnit\Framework\TestCase->runTest()
+#20 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestResult.php(695): PHPUnit\Framework\TestCase->runBare()
+#21 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestCase.php(883): PHPUnit\Framework\TestResult->run(Object(App\Test\TestCase\Controller\PagesControllerTest))
+#22 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestSuite.php(746): PHPUnit\Framework\TestCase->run(Object(PHPUnit\Framework\TestResult))
+#23 phar:///usr/local/bin/phpunit.phar/phpunit/Framework/TestSuite.php(746): PHPUnit\Framework\TestSuite->run(Object(PHPUnit\Framework\TestResult))
+#24 phar:///usr/local/bin/phpunit.phar/phpunit/TextUI/TestRunner.php(537): PHPUnit\Framework\TestSuite->run(Object(PHPUnit\Framework\TestResult))
+#25 phar:///usr/local/bin/phpunit.phar/phpunit/TextUI/Command.php(210): PHPUnit\TextUI\TestRunner->doRun(Object(PHPUnit\Framework\TestSuite), Array, true)
+#26 phar:///usr/local/bin/phpunit.phar/phpunit/TextUI/Command.php(141): PHPUnit\TextUI\Command->run(Array, true)
+#27 /usr/local/bin/phpunit.phar(547): PHPUnit\TextUI\Command::main()
+#28 {main}
+
+
