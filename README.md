@@ -16,7 +16,7 @@ To use this repo, clone using:
 git clone https://github.com/mondayEvents/EventsPlatform.git
 ```
 
-After that, run the following inside the *EventsPlatform* folder:
+After that, run the composer inside the *EventsPlatform* folder:
 ```
 composer install
 ```
