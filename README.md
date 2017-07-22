@@ -13,10 +13,10 @@
 
 To use this repo, clone using:
 ```
-git clone https://github.com/mushzinho/Projeto-Evento-Monday.git
+git clone https://github.com/mondayEvents/EventsPlatform.git
 ```
 
-After that, run the following inside the *Projeto-Evento-Monday* folder:
+After that, run the following inside the *EventsPlatform* folder:
 ```
 composer install
 ```
