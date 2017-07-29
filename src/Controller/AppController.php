@@ -16,6 +16,7 @@ namespace App\Controller;
 
 use Cake\Controller\Controller;
 use Cake\Event\Event;
+use Cake\Network\Exception\BadRequestException;
 
 /**
  * Application Controller
@@ -30,10 +31,7 @@ class AppController extends Controller
 
     /**
      * Initialization hook method.
-     *
      * Use this method to add common initialization code like loading components.
-     *
-     * e.g. `$this->loadComponent('Security');`
      *
      * @return void
      */
@@ -43,13 +41,42 @@ class AppController extends Controller
 
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
+        $this->loadComponent('Security');
+        $this->loadComponent('Csrf');
 
         /*
-         * Enable the following components for recommended CakePHP security settings.
-         * see http://book.cakephp.org/3.0/en/controllers/components/security.html
+         * Auth Component with JSON Web Token service
          */
-        //$this->loadComponent('Security');
-        //$this->loadComponent('Csrf');
+        $this->loadComponent('Auth', [
+            'storage' => 'Memory',
+            'authenticate' => [
+                'Form' => [
+                    'contain' => [
+                        'Details',
+                        'Recurrences'
+                    ],
+                    'scope' => ['Users.deleted IS NUll']
+                ],
+                'ADmad/JwtAuth.Jwt' => [
+                    'parameter' => 'token',
+                    'userModel' => 'Users',
+                    'contain' => [
+                        'Recurrences',
+                        'Details'
+                    ],
+                    'scope' => ['Users.deleted IS NUll'],
+                    'fields' => [
+                        'username' => 'id',
+                    ],
+                    'queryDatasource' => false
+                ]
+            ],
+            'authorize' => [
+                'Acl.Actions' => ['actionPath' => 'controllers']
+            ],
+            'unauthorizedRedirect' => false,
+            'checkAuthIn' => 'Controller.initialize'
+        ]);
     }
 
     /**
@@ -65,5 +92,11 @@ class AppController extends Controller
         ) {
             $this->set('_serialize', true);
         }
+    }
+
+    public function beforeFilter(Event $event) {
+//        if (!$this->request->is('json')) {
+//            throw new BadRequestException('Invalid method request');
+//        }
     }
 }

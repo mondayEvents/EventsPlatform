@@ -11,7 +11,8 @@
         "cakephp/migrations": "~1.0",
         "cakephp/plugin-installer": "~1.0",
         "markstory/asset_compress": "^3.2",
-        "symfony/event-dispatcher": "^3.3"
+        "symfony/event-dispatcher": "^3.3",
+        "admad/cakephp-jwt-auth": "^2.1"
     },
     "require-dev": {
         "psy/psysh": "@stable",
