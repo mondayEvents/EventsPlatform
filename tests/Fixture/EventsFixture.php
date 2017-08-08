@@ -19,9 +19,11 @@ class EventsFixture extends TestFixture
     public $fields = [
         'id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'user_id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
-        'date_start' => ['type' => 'timestamp', 'length' => null, 'null' => false, 'default' => 'CURRENT_TIMESTAMP', 'comment' => '', 'precision' => null],
-        'date_end' => ['type' => 'timestamp', 'length' => null, 'null' => false, 'default' => '0000-00-00 00:00:00', 'comment' => '', 'precision' => null],
+        'name' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'date_start' => ['type' => 'timestamp', 'length' => null, 'null' => false, 'default' => 'CURRENT_TIMESTAMP(1)', 'comment' => '', 'precision' => null],
+        'date_end' => ['type' => 'timestamp', 'length' => null, 'null' => false, 'default' => '0000-00-00 00:00:00.0', 'comment' => '', 'precision' => null],
         'tags' => ['type' => 'string', 'length' => 255, 'null' => true, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'type' => ['type' => 'integer', 'length' => 3, 'unsigned' => true, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         '_indexes' => [
             'fk_events_users_idx' => ['type' => 'index', 'columns' => ['user_id'], 'length' => []],
         ],
@@ -43,11 +45,13 @@ class EventsFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => '3b73965c-5ab3-4f40-81df-790bd08342ca',
-            'user_id' => 'eca80f02-7b72-4a9c-8e47-aed715c65292',
-            'date_start' => 1500676010,
-            'date_end' => 1500676010,
-            'tags' => 'Lorem ipsum dolor sit amet'
+            'id' => '5fe6fb34-a104-450c-b0af-b09e76f0739f',
+            'user_id' => 'd84f1ad0-de3f-4cb4-bf6b-859a84c50dbc',
+            'name' => 'Lorem ipsum dolor sit amet',
+            'date_start' => 1502161118,
+            'date_end' => 1502161118,
+            'tags' => 'Lorem ipsum dolor sit amet',
+            'type' => 1
         ],
     ];
 }

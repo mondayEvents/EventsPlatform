@@ -28,8 +28,17 @@ class EventsTableTest extends TestCase
         'app.users',
         'app.groups',
         'app.registrations',
+        'app.activities',
+        'app.panelists',
+        'app.themes',
+        'app.event_places',
+        'app.activity_places',
+        'app.concomitance',
+        'app.registration_items',
         'app.coupons',
-        'app.sponsorships'
+        'app.event_associations',
+        'app.sponsorships',
+        'app.event_managers'
     ];
 
     /**

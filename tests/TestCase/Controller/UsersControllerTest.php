@@ -21,10 +21,7 @@ class UsersControllerTest extends IntegrationTestCase
         'app.events',
         'app.coupons',
         'app.registrations',
-        'app.registration_items',
-        'app.event_activities',
-        'app.sponsorships',
-        'app.companies'
+        'app.sponsorships'
     ];
 
     /**
