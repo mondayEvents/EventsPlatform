@@ -22,7 +22,7 @@ class UsersFixture extends TestFixture
         'username' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'password' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'name' => ['type' => 'string', 'length' => 100, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
-        'birthdate' => ['type' => 'timestamp', 'length' => null, 'null' => false, 'default' => 'CURRENT_TIMESTAMP', 'comment' => '', 'precision' => null],
+        'birthdate' => ['type' => 'timestamp', 'length' => null, 'null' => false, 'default' => 'CURRENT_TIMESTAMP(1)', 'comment' => '', 'precision' => null],
         'tags' => ['type' => 'string', 'length' => 255, 'null' => true, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         '_indexes' => [
             'username_index' => ['type' => 'index', 'columns' => ['username'], 'length' => []],
@@ -48,12 +48,12 @@ class UsersFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => '59bd8c5d-4a99-4302-91ed-eacfa6cf8622',
+            'id' => '9f698802-e3b0-4ef6-933e-85b6d9d23835',
             'groups_id' => 1,
             'username' => 'Lorem ipsum dolor sit amet',
             'password' => 'Lorem ipsum dolor sit amet',
             'name' => 'Lorem ipsum dolor sit amet',
-            'birthdate' => 1500675979,
+            'birthdate' => 1502042097,
             'tags' => 'Lorem ipsum dolor sit amet'
         ],
     ];

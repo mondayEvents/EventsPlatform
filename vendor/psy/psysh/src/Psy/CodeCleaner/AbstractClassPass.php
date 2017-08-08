@@ -40,7 +40,7 @@ class AbstractClassPass extends CodeCleanerPass
                 $this->abstractMethods[] = $name;
 
                 if ($node->stmts !== null) {
-                    $msg = sprintf('Abstract function %s cannot contain body', $name);
+                    $msg = sprintf('Abstraction function %s cannot contain body', $name);
                     throw new FatalErrorException($msg, 0, E_ERROR, null, $node->getLine());
                 }
             }

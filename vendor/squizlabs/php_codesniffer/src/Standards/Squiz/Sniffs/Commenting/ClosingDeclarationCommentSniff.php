@@ -48,7 +48,7 @@ class ClosingDeclarationCommentSniff implements Sniff
         if ($tokens[$stackPtr]['code'] === T_FUNCTION) {
             $methodProps = $phpcsFile->getMethodProperties($stackPtr);
 
-            // Abstract methods do not require a closing comment.
+            // Abstraction methods do not require a closing comment.
             if ($methodProps['is_abstract'] === true) {
                 return;
             }
@@ -61,7 +61,7 @@ class ClosingDeclarationCommentSniff implements Sniff
 
             if (isset($tokens[$stackPtr]['scope_closer']) === false) {
                 $error = 'Possible parse error: non-abstract method defined as abstract';
-                $phpcsFile->addWarning($error, $stackPtr, 'Abstract');
+                $phpcsFile->addWarning($error, $stackPtr, 'Abstraction');
                 return;
             }
 

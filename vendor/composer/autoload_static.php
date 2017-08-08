@@ -68,6 +68,10 @@ class ComposerStaticInitd937735463c8a0295b585f32786d62a0
             'IdeHelper\\Test\\Fixture\\' => 23,
             'IdeHelper\\' => 10,
         ),
+        'F' => 
+        array (
+            'Firebase\\JWT\\' => 13,
+        ),
         'D' => 
         array (
             'DebugKit\\Test\\Fixture\\' => 22,
@@ -94,6 +98,7 @@ class ComposerStaticInitd937735463c8a0295b585f32786d62a0
             'AssetCompress\\' => 14,
             'App\\Test\\' => 9,
             'App\\' => 4,
+            'ADmad\\JwtAuth\\' => 14,
         ),
     );
 
@@ -202,6 +207,10 @@ class ComposerStaticInitd937735463c8a0295b585f32786d62a0
         array (
             0 => __DIR__ . '/..' . '/dereuromark/cakephp-ide-helper/src',
         ),
+        'Firebase\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
+        ),
         'DebugKit\\Test\\Fixture\\' => 
         array (
             0 => __DIR__ . '/..' . '/cakephp/debug_kit/tests/Fixture',
@@ -261,6 +270,10 @@ class ComposerStaticInitd937735463c8a0295b585f32786d62a0
         'App\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
+        ),
+        'ADmad\\JwtAuth\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/admad/cakephp-jwt-auth/src',
         ),
     );
 
