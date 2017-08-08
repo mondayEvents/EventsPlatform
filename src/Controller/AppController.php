@@ -48,34 +48,31 @@ class AppController extends Controller
          * Auth Component with JSON Web Token service
          */
         $this->loadComponent('Auth', [
-            'storage' => 'Memory',
+//            'storage' => 'Memory',
             'authenticate' => [
                 'Form' => [
-                    'contain' => [
-                        'Details',
-                        'Recurrences'
-                    ],
+                    'contain' => [],
                     'scope' => ['Users.deleted IS NUll']
                 ],
-                'ADmad/JwtAuth.Jwt' => [
-                    'parameter' => 'token',
-                    'userModel' => 'Users',
-                    'contain' => [
-                        'Recurrences',
-                        'Details'
-                    ],
-                    'scope' => ['Users.deleted IS NUll'],
-                    'fields' => [
-                        'username' => 'id',
-                    ],
-                    'queryDatasource' => false
-                ]
+//                'ADmad/JwtAuth.Jwt' => [
+//                    'parameter' => 'token',
+//                    'userModel' => 'Users',
+//                    'contain' => [
+//                        'Recurrences',
+//                        'Details'
+//                    ],
+//                    'scope' => ['Users.deleted IS NUll'],
+//                    'fields' => [
+//                        'username' => 'id',
+//                    ],
+//                    'queryDatasource' => false
+//                ]
             ],
-            'authorize' => [
-                'Acl.Actions' => ['actionPath' => 'controllers']
-            ],
-            'unauthorizedRedirect' => false,
-            'checkAuthIn' => 'Controller.initialize'
+//            'authorize' => [
+//                'Acl.Actions' => ['actionPath' => 'controllers']
+//            ],
+//            'unauthorizedRedirect' => false,
+//            'checkAuthIn' => 'Controller.initialize'
         ]);
     }
 

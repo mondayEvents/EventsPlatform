@@ -17,7 +17,7 @@ namespace Cake\Auth;
 use Cake\Core\InstanceConfigTrait;
 
 /**
- * Abstract password hashing class
+ * Abstraction password hashing class
  */
 abstract class AbstractPasswordHasher
 {

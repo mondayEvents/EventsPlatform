@@ -19,7 +19,7 @@ use Cake\Core\InstanceConfigTrait;
 use Cake\Http\ServerRequest;
 
 /**
- * Abstract base authorization adapter for AuthComponent.
+ * Abstraction base authorization adapter for AuthComponent.
  *
  * @see \Cake\Controller\Component\AuthComponent::$authenticate
  */

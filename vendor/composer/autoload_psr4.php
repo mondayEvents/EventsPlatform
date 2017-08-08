@@ -32,6 +32,7 @@ return array(
     'JsonSchema\\' => array($vendorDir . '/justinrainbow/json-schema/src/JsonSchema'),
     'IdeHelper\\Test\\Fixture\\' => array($vendorDir . '/dereuromark/cakephp-ide-helper/tests/Fixture'),
     'IdeHelper\\' => array($vendorDir . '/dereuromark/cakephp-ide-helper/src'),
+    'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
     'DebugKit\\Test\\Fixture\\' => array($vendorDir . '/cakephp/debug_kit/tests/Fixture'),
     'DebugKit\\' => array($vendorDir . '/cakephp/debug_kit/src'),
     'Composer\\Spdx\\' => array($vendorDir . '/composer/spdx-licenses/src'),
@@ -47,4 +48,5 @@ return array(
     'AssetCompress\\' => array($vendorDir . '/markstory/asset_compress/src'),
     'App\\Test\\' => array($baseDir . '/tests'),
     'App\\' => array($baseDir . '/src'),
+    'ADmad\\JwtAuth\\' => array($vendorDir . '/admad/cakephp-jwt-auth/src'),
 );
