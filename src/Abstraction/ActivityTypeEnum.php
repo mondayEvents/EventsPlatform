@@ -1,13 +1,13 @@
 <?php
-namespace App\Model\Table;
+namespace App\Abstraction;
 
-use App\Utility\BasicEnum;
+use App\Abstraction\E;
 
 /**
- * Activities Type Enum Class
+ * Activity Type Enum Class
  *
  */
-abstract class ActivityTypeTable extends BasicEnum
+abstract class ActivityTypeEnum extends Enum
 {
     const __default = self::LECTURE;
 

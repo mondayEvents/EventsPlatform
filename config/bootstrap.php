@@ -221,4 +221,7 @@ if (Configure::read('debug')) {
     Plugin::load('DebugKit', ['bootstrap' => true]);
 }
 
+Type::map('ActivityType', 'App\Database\Type\ActivityType');
+Type::map('EventType', 'App\Database\Type\EventType');
+
 Plugin::load('ADmad/JwtAuth');
