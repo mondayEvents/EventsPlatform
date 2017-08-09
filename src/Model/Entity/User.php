@@ -56,4 +56,23 @@ class User extends Entity
         return (new DefaultPasswordHasher)->hash($password);
     }
 
+    public function parentNode ()
+    {
+        if (!$this->id) {
+            return null;
+        }
+        if (isset($this->group_id)) {
+            $groupId = $this->group_id;
+        }
+        if (!$groupId) {
+            return null;
+        }
+        return ['Groups' => ['id' => $groupId]];
+    }
+
+    public function bindNode ($user)
+    {
+        return ['model' => 'Groups', 'foreign_key' => $user['Users']['group_id']];
+    }
+
 }

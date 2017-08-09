@@ -34,9 +34,17 @@ class UsersTable extends Table
     {
         parent::initialize($config);
 
+        $this->addBehavior('Acl.Acl', ['type' => 'requester']);
+
         $this->setTable('users');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
+
+        $this->addBehavior('Timestamp');
+        $this->addBehavior('Acl.Acl', [
+            'type'      => 'requester',
+            'enabled'   => false
+        ]);
 
         $this->belongsTo('Groups', [
             'foreignKey' => 'group_id',

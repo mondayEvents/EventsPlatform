@@ -2,6 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\I18n\Time;
+use Cake\Network\Exception\UnauthorizedException;
 
 /**
  * Users Controller
@@ -12,6 +14,16 @@ use App\Controller\AppController;
  */
 class UsersController extends AppController
 {
+
+    /**
+     * Initialize Controller
+     *
+     */
+    public function initialize()
+    {
+        parent::initialize();
+        $this->Auth->allow(['add', 'logout']);
+    }
 
     /**
      * Index method
@@ -70,7 +82,11 @@ class UsersController extends AppController
     public function add()
     {
         $user = $this->Users->newEntity();
+
         if ($this->request->is('post')) {
+
+//            dd($this->request->getData());
+
             $user = $this->Users->patchEntity($user, $this->request->getData());
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('The user has been saved.'));

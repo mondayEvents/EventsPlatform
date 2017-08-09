@@ -39,6 +39,9 @@ class AppController extends Controller
     {
         parent::initialize();
 
+
+
+        $this->loadComponent('Acl.Acl');
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
         $this->loadComponent('Security');
@@ -68,11 +71,11 @@ class AppController extends Controller
 //                    'queryDatasource' => false
 //                ]
             ],
-//            'authorize' => [
-//                'Acl.Actions' => ['actionPath' => 'controllers']
-//            ],
-//            'unauthorizedRedirect' => false,
-//            'checkAuthIn' => 'Controller.initialize'
+            'authorize' => [
+                'Acl.Actions' => ['actionPath' => 'controllers']
+            ],
+            'unauthorizedRedirect' => false,
+            'checkAuthIn' => 'Controller.initialize'
         ]);
     }
 
@@ -89,11 +92,5 @@ class AppController extends Controller
         ) {
             $this->set('_serialize', true);
         }
-    }
-
-    public function beforeFilter(Event $event) {
-//        if (!$this->request->is('json')) {
-//            throw new BadRequestException('Invalid method request');
-//        }
     }
 }
