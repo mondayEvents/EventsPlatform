@@ -2508,5 +2508,53 @@
             "cakephp",
             "jwt"
         ]
+    },
+    {
+        "name": "cakephp/acl",
+        "version": "0.2.5",
+        "version_normalized": "0.2.5.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/cakephp/acl.git",
+            "reference": "ce86b84244f7c90afe981a8398264e1b32676a32"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/cakephp/acl/zipball/ce86b84244f7c90afe981a8398264e1b32676a32",
+            "reference": "ce86b84244f7c90afe981a8398264e1b32676a32",
+            "shasum": ""
+        },
+        "require": {
+            "cakephp/cakephp": "^3.1.0",
+            "cakephp/plugin-installer": "*"
+        },
+        "require-dev": {
+            "cakephp/cakephp-codesniffer": "^3.0",
+            "phpunit/phpunit": ">= 4.2, < 6.0"
+        },
+        "time": "2017-05-24T11:06:23+00:00",
+        "type": "cakephp-plugin",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Acl\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "CakePHP Community",
+                "homepage": "https://github.com/cakephp/acl/graphs/contributors"
+            }
+        ],
+        "description": "Acl Plugin for CakePHP 3.x framework",
+        "homepage": "http://cakephp.org",
+        "keywords": [
+            "acl",
+            "cakephp"
+        ]
     }
 ]
