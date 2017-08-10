@@ -98,6 +98,7 @@ class ComposerStaticInitd937735463c8a0295b585f32786d62a0
             'AssetCompress\\' => 14,
             'App\\Test\\' => 9,
             'App\\' => 4,
+            'Acl\\' => 4,
             'ADmad\\JwtAuth\\' => 14,
         ),
     );
@@ -270,6 +271,10 @@ class ComposerStaticInitd937735463c8a0295b585f32786d62a0
         'App\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
+        ),
+        'Acl\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/cakephp/acl/src',
         ),
         'ADmad\\JwtAuth\\' => 
         array (

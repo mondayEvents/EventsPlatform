@@ -48,5 +48,6 @@ return array(
     'AssetCompress\\' => array($vendorDir . '/markstory/asset_compress/src'),
     'App\\Test\\' => array($baseDir . '/tests'),
     'App\\' => array($baseDir . '/src'),
+    'Acl\\' => array($vendorDir . '/cakephp/acl/src'),
     'ADmad\\JwtAuth\\' => array($vendorDir . '/admad/cakephp-jwt-auth/src'),
 );
