@@ -225,3 +225,4 @@ Type::map('ActivityType', 'App\Database\Type\ActivityType');
 Type::map('EventType', 'App\Database\Type\EventType');
 
 Plugin::load('ADmad/JwtAuth');
+Plugin::load('Acl', ['bootstrap' => true]);
