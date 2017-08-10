@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "00cfb7c5ddceff85cae06491649bbcc3",
+    "content-hash": "1dff9e88dca739a98a81298e9fe6c229",
     "packages": [
         {
             "name": "admad/cakephp-jwt-auth",
@@ -647,6 +647,59 @@
                 "php mobile detect"
             ],
             "time": "2017-03-29T13:59:30+00:00"
+        },
+        {
+            "name": "multidots/cakephp-rest-api",
+            "version": "v1.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/multidots/cakephp-rest-api.git",
+                "reference": "01591b3c4a6c2bfb3383f872181be40ba1be5e30"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/multidots/cakephp-rest-api/zipball/01591b3c4a6c2bfb3383f872181be40ba1be5e30",
+                "reference": "01591b3c4a6c2bfb3383f872181be40ba1be5e30",
+                "shasum": ""
+            },
+            "require": {
+                "cakephp/cakephp": ">=3.3.2 <4.0.0",
+                "firebase/php-jwt": "^4.0",
+                "php": ">=5.5.9"
+            },
+            "require-dev": {
+                "cakephp/cakephp-codesniffer": "dev-master",
+                "phpunit/phpunit": "4.1.*"
+            },
+            "type": "cakephp-plugin",
+            "autoload": {
+                "psr-4": {
+                    "RestApi\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Multidots",
+                    "homepage": "http://www.multidots.com",
+                    "role": "Author"
+                },
+                {
+                    "name": "Community",
+                    "homepage": "https://github.com/multidots/cakephp-rest-api/graphs/contributors"
+                }
+            ],
+            "description": "CakePHP 3 plugin to provide basic support for building REST API services",
+            "homepage": "https://github.com/cakephp/debug_kit",
+            "keywords": [
+                "api",
+                "cakephp",
+                "rest"
+            ],
+            "time": "2017-05-24T06:25:12+00:00"
         },
         {
             "name": "psr/http-message",
