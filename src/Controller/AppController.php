@@ -14,7 +14,8 @@
  */
 namespace App\Controller;
 
-use Cake\Controller\Controller;
+//use Cake\Controller\Controller;
+use RestApi\Controller\ApiController;
 use Cake\Event\Event;
 use Cake\Network\Exception\BadRequestException;
 
@@ -26,7 +27,7 @@ use Cake\Network\Exception\BadRequestException;
  *
  * @link http://book.cakephp.org/3.0/en/controllers.html#the-app-controller
  */
-class AppController extends Controller
+class AppController extends ApiController
 {
 
     /**
@@ -39,13 +40,11 @@ class AppController extends Controller
     {
         parent::initialize();
 
-
-
         $this->loadComponent('Acl.Acl');
         $this->loadComponent('RequestHandler');
-        $this->loadComponent('Flash');
-        $this->loadComponent('Security');
-        $this->loadComponent('Csrf');
+//        $this->loadComponent('Flash');
+//        $this->loadComponent('Security');
+//        $this->loadComponent('Csrf');
 
         /*
          * Auth Component with JSON Web Token service
@@ -85,12 +84,12 @@ class AppController extends Controller
      * @param \Cake\Event\Event $event The beforeRender event.
      * @return \Cake\Network\Response|null|void
      */
-    public function beforeRender(Event $event)
-    {
-        if (!array_key_exists('_serialize', $this->viewVars) &&
-            in_array($this->response->type(), ['application/json', 'application/xml'])
-        ) {
-            $this->set('_serialize', true);
-        }
-    }
+//    public function beforeRender(Event $event)
+//    {
+//        if (!array_key_exists('_serialize', $this->viewVars) &&
+//            in_array($this->response->type(), ['application/json', 'application/xml'])
+//        ) {
+//            $this->set('_serialize', true);
+//        }
+//    }
 }

@@ -13,7 +13,8 @@
         "markstory/asset_compress": "^3.2",
         "symfony/event-dispatcher": "^3.3",
         "admad/cakephp-jwt-auth": "^2.1",
-        "cakephp/acl": "^0.2.5"
+        "cakephp/acl": "^0.2.5",
+        "multidots/cakephp-rest-api": "^1.0"
     },
     "require-dev": {
         "psy/psysh": "@stable",
