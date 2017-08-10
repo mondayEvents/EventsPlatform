@@ -1,5 +1,4 @@
-.DS_Store
 tmp/*
 logs/*
-config/app.php
 vendor/*
+config/app.php
