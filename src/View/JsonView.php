@@ -123,7 +123,6 @@ class JsonView extends SerializedView
         }
 
         $json['success'] = $is_success;
-        dd($data);
 
         if (isset($data['JWT']))
         {
