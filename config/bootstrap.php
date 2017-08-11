@@ -221,6 +221,8 @@ if (Configure::read('debug')) {
     Plugin::load('DebugKit', ['bootstrap' => true]);
 }
 
+Configure::write('encriptionKey', 'U36jzKBPZPmt5uTKu0dYExXemSHgKN58');
+
 Type::map('ActivityType', 'App\Database\Type\ActivityType');
 Type::map('EventType', 'App\Database\Type\EventType');
 

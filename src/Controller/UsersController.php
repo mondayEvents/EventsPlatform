@@ -50,9 +50,11 @@ class UsersController extends AppController
             throw new UnauthorizedException('Invalid username or password');
         }
 
-        $this->set([
-            'JWT' => $this->Users->createToken($user['id']),
-            '_serialize' => ['JWT']
+        $this->set(['JWT' => $this->Users->createToken($user['id'], $user['group_id'], $user['jti'])]);
+        unset($user['group_id'], $user['jti']);
+
+        $this->set(['user' => $user,
+            '_serialize' => ['JWT', 'user']
         ]);
     }
 
@@ -89,6 +91,7 @@ class UsersController extends AppController
         $user = $this->Users->newEntity();
         $user = $this->Users->patchEntity($user, $this->request->getData());
         $user->groups_id = 2;
+        $user->jti = Text::uuid();
 
         if (!$this->Users->save($user)) {
             $this->response->statusCode(400);

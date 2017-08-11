@@ -65,6 +65,9 @@ class AppController extends Controller
                         'queryDatasource' => false
                     ]
                 ],
+                'authorize' => [
+                    'Acl.Actions' => ['actionPath' => 'controllers']
+                ],
                 'unauthorizedRedirect' => false,
                 'checkAuthIn' => 'Controller.initialize'
             ]

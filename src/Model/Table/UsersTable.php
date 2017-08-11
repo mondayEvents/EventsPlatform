@@ -1,6 +1,7 @@
 <?php
 namespace App\Model\Table;
 
+use Cake\Core\Configure;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -112,21 +113,31 @@ class UsersTable extends Table
     }
 
     /**
-     * Creates the JWT for the user id
-     *
-     * @param $user_id
-     * @return array
+     * @param null $user_id
+     * @param null $group_id
+     * @param null $jti
+     * @return string
+     * @throws \Exception
      */
-    public function createToken($user_id) : array
+    public function createToken ($user_id = null, $group_id = null, $jti = null)
     {
-        return [
-            'id' => $user_id,
-            'token' => JWT::encode(
+        if (empty($user_id) || empty($group_id) || empty($jti))
+        {
+            throw new \Exception(__('Not enough data for token generation'));
+        }
+
+        $input = JWT::encode(
                 [
-                    'sub' => $user_id,
+                    'sub' => [
+                        'uid' => $user_id,
+                        'gid' => base64_encode(Security::encrypt($group_id, Configure::read('encriptionKey')))
+                    ],
+                    'jti' => $jti,
                     'exp' =>  time() + 604800
                 ],
-                Security::salt())
-        ];
+                Security::salt()
+            );
+
+        return $input;
     }
 }
