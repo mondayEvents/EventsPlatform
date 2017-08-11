@@ -16,7 +16,15 @@ To use this repo, clone using:
 git clone https://github.com/mondayEvents/EventsPlatform.git
 ```
 
-After that, run the composer inside the *EventsPlatform* folder:
+Go to *EventsPlatform* folder and run the following:
 ```
 composer install
 ```
+
+Make sure to setup your DB connection details inside the **config/app.php** file. After that, run migrations:
+```
+bin/cake migrations migrate
+```
+
+Happy coding :)
+
