@@ -40,6 +40,15 @@ class Event extends Entity
     ];
 
     /**
+     * Fields that are excluded from JSON versions of the entity.
+     *
+     * @var array
+     */
+    protected $_hidden = [
+        'user_id',
+    ];
+
+    /**
      * Returns if user is owner or not of the event
      *
      * @param $user

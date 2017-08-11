@@ -24,7 +24,7 @@ class EventsController extends AppController
     {
 
         parent::initialize();
-        $this->Auth->allow(['index']);
+        $this->Auth->allow(['index', 'view']);
     }
 
     /**
@@ -59,22 +59,30 @@ class EventsController extends AppController
                 [
                     'Users',
                     'Coupons',
-                    'EventAssociations',
-                    'EventManagers',
+                    'AdditionalEvents' => [
+                        'Events' => [
+                            'Activities' =>[
+                                'Speakers',
+                                'EventPlaces',
+                                'Tracks'
+                            ]
+                        ]
+                    ],
+//                    'EventManagers',
                     'Registrations',
                     'Sponsorships',
-                    'Activities' =>
-                        [
-                            'Panelists',
-                            'EventPlaces'
-                        ]
+                    'Activities' =>[
+                        'Speakers',
+                        'EventPlaces',
+                        'Tracks'
+                    ]
                 ]
         ]);
 
-        $isOwner = $event->isOwner($this->Auth->user('id'));
+        $is_owner = $event->isOwner($this->Auth->user('id'));
 
-        $this->set(compact('event','isOwner'));
-        $this->set('_serialize', ['event']);
+        $this->set(compact('event','is_owner'));
+        $this->set('_serialize', ['is_owner', 'event']);
     }
 
     /**
