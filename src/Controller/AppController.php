@@ -39,44 +39,36 @@ class AppController extends Controller
     {
         parent::initialize();
 
-
-
         $this->loadComponent('Acl.Acl');
         $this->loadComponent('RequestHandler');
-        $this->loadComponent('Flash');
-        $this->loadComponent('Security');
-        $this->loadComponent('Csrf');
+//        $this->loadComponent('Flash');
+//        $this->loadComponent('Security');
 
         /*
          * Auth Component with JSON Web Token service
          */
-        $this->loadComponent('Auth', [
-//            'storage' => 'Memory',
-            'authenticate' => [
-                'Form' => [
-                    'contain' => [],
-                    'scope' => ['Users.deleted IS NUll']
+        $this->loadComponent('Auth',
+            [
+                'storage' => 'Memory',
+                'authenticate' => [
+                    'Form' => [
+                        'scope' => ['Users.active' => 1]
+                    ],
+                    'ADmad/JwtAuth.Jwt' => [
+                        'parameter' => 'token',
+                        'userModel' => 'Users',
+                        'contain' => [],
+                        'scope' => ['Users.deleted IS NUll'],
+                        'fields' => [
+                            'username' => 'id',
+                        ],
+                        'queryDatasource' => false
+                    ]
                 ],
-//                'ADmad/JwtAuth.Jwt' => [
-//                    'parameter' => 'token',
-//                    'userModel' => 'Users',
-//                    'contain' => [
-//                        'Recurrences',
-//                        'Details'
-//                    ],
-//                    'scope' => ['Users.deleted IS NUll'],
-//                    'fields' => [
-//                        'username' => 'id',
-//                    ],
-//                    'queryDatasource' => false
-//                ]
-            ],
-            'authorize' => [
-                'Acl.Actions' => ['actionPath' => 'controllers']
-            ],
-            'unauthorizedRedirect' => false,
-            'checkAuthIn' => 'Controller.initialize'
-        ]);
+                'unauthorizedRedirect' => false,
+                'checkAuthIn' => 'Controller.initialize'
+            ]
+        );
     }
 
     /**
