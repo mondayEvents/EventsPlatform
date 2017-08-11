@@ -1,8 +1,10 @@
 <?php
 namespace App\Model\Entity;
 
+use Cake\Core\Configure;
 use Cake\ORM\Entity;
 use Cake\Auth\DefaultPasswordHasher;
+use Cake\Utility\Security;
 
 /**
  * User Entity
@@ -14,6 +16,7 @@ use Cake\Auth\DefaultPasswordHasher;
  * @property string $name
  * @property \Cake\I18n\FrozenTime $birthdate
  * @property string $tags
+ * @property string $jti
  *
  * @property \App\Model\Entity\Group $group
  * @property \App\Model\Entity\Event[] $events
@@ -77,7 +80,13 @@ class User extends Entity
 
     public function bindNode ($user)
     {
-        return ['model' => 'Groups', 'foreign_key' => $user['Users']['group_id']];
+        $group_id = Security::decrypt(
+            base64_decode(
+                $user['Users']['sub']['gid']),
+                Configure::read('encriptionKey'
+            )
+        );
+        return ['model' => 'Groups', 'foreign_key' => $group_id];
     }
 
 }
