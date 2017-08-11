@@ -22,7 +22,7 @@ class UsersController extends AppController
     public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['add', 'logout']);
+        $this->Auth->allow(['add', 'token']);
     }
 
     /**
@@ -41,16 +41,19 @@ class UsersController extends AppController
         $this->set('_serialize', ['users']);
     }
 
-    public function login()
+    public function token()
     {
-        if ($this->request->is('post')) {
-            $user = $this->Auth->identify();
-            if ($user) {
-                $this->Auth->setUser($user);
-                return $this->redirect($this->Auth->redirectUrl());
-            }
-            $this->Flash->error(__('Invalid username or password, try again'));
+        $this->request->allowMethod(['post']);
+
+        $user = $this->Auth->identify();
+        if (!$user) {
+            throw new UnauthorizedException('Invalid username or password');
         }
+
+        $this->set([
+            'JWT' => $this->Users->createToken($user['id']),
+            '_serialize' => ['JWT']
+        ]);
     }
 
     public function logout()
@@ -77,27 +80,31 @@ class UsersController extends AppController
     /**
      * Add method
      *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
+     * @return void
      */
     public function add()
     {
+        $this->request->allowMethod(['post']);
+
         $user = $this->Users->newEntity();
+        $user = $this->Users->patchEntity($user, $this->request->getData());
+        $user->groups_id = 2;
 
-        if ($this->request->is('post')) {
+        if (!$this->Users->save($user)) {
+            $this->response->statusCode(400);
+            $error = $user->getErrors();
 
-//            dd($this->request->getData());
+            $this->set(compact('error'));
+            $this->set('_serialize', ['error']);
 
-            $user = $this->Users->patchEntity($user, $this->request->getData());
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
+            return;
         }
-        $groups = $this->Users->Groups->find('list', ['limit' => 200]);
-        $this->set(compact('user', 'groups'));
-        $this->set('_serialize', ['user']);
+
+        $JWT = $this->Users->createToken($user->id);
+
+        $this->set(compact('JWT'));
+        $this->set('_serialize', ['JWT']);
+
     }
 
     /**
