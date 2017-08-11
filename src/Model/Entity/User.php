@@ -64,6 +64,11 @@ class User extends Entity
         if (isset($this->group_id)) {
             $groupId = $this->group_id;
         }
+
+        if (!isset($groupId)) {
+            return null;
+        }
+
         if (!$groupId) {
             return null;
         }
