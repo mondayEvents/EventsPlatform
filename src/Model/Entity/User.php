@@ -3,8 +3,6 @@ namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
 use Cake\Auth\DefaultPasswordHasher;
-use Cake\Utility\Security;
-use Firebase\JWT\JWT;
 
 /**
  * User Entity
@@ -80,19 +78,6 @@ class User extends Entity
     public function bindNode ($user)
     {
         return ['model' => 'Groups', 'foreign_key' => $user['Users']['group_id']];
-    }
-
-    public function createToken() : array
-    {
-        return [
-            'id' => $this->id,
-            'token' => JWT::encode(
-                [
-                    'sub' => $this->id,
-                    'exp' =>  time() + 604800
-                ],
-                Security::salt())
-        ];
     }
 
 }
