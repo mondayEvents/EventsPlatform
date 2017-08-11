@@ -65,9 +65,13 @@ class EventsTable extends Table
         $this->hasMany('Coupons', [
             'foreignKey' => 'event_id'
         ]);
-        $this->hasMany('EventAssociations', [
-            'foreignKey' => 'event_id'
+
+        $this->hasMany('AdditionalEvents', [
+            'className' => 'AdditionalEvents',
+            'foreignKey' => 'super_event_id',
+            'joinTable' => 'additional_events',
         ]);
+
         $this->hasMany('EventManagers', [
             'foreignKey' => 'event_id'
         ]);
