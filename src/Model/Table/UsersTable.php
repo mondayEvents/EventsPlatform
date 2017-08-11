@@ -5,6 +5,8 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Utility\Security;
+use Firebase\JWT\JWT;
 
 /**
  * Users Model
@@ -107,5 +109,24 @@ class UsersTable extends Table
         $rules->add($rules->existsIn(['groups_id'], 'Groups'));
 
         return $rules;
+    }
+
+    /**
+     * Creates the JWT for the user id
+     *
+     * @param $user_id
+     * @return array
+     */
+    public function createToken($user_id) : array
+    {
+        return [
+            'id' => $user_id,
+            'token' => JWT::encode(
+                [
+                    'sub' => $user_id,
+                    'exp' =>  time() + 604800
+                ],
+                Security::salt())
+        ];
     }
 }
