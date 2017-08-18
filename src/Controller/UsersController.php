@@ -2,8 +2,12 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-use Cake\I18n\Time;
-use Cake\Network\Exception\UnauthorizedException;
+use Cake\{
+    I18n\Time,
+    Network\Exception\UnauthorizedException,
+    Network\Exception\BadRequestException,
+    Utility\Text
+};
 
 /**
  * Users Controller
@@ -83,10 +87,16 @@ class UsersController extends AppController
      * Add method
      *
      * @return void
+     * @throws \Cake\Network\Exception\BadRequestException When user is already logged.
      */
     public function add()
     {
         $this->request->allowMethod(['post']);
+
+        if ($this->Auth->identify())
+        {
+            throw new BadRequestException(__("You are already logged in!"));
+        }
 
         $user = $this->Users->newEntity();
         $user = $this->Users->patchEntity($user, $this->request->getData());
@@ -94,12 +104,8 @@ class UsersController extends AppController
         $user->jti = Text::uuid();
 
         if (!$this->Users->save($user)) {
-            $this->response->statusCode(400);
-            $error = $user->getErrors();
-
-            $this->set(compact('error'));
-            $this->set('_serialize', ['error']);
-
+            $error = $user->errors();
+            $this->errorResponse(400, compact('error'));
             return;
         }
 
@@ -113,46 +119,24 @@ class UsersController extends AppController
     /**
      * Edit method
      *
-     * @param string|null $id User id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     * @return void|null Renders JSON response.
+     * @throws \Cake\Network\Exception\NotFoundException When user not found.
      */
-    public function edit($id = null)
+    public function edit()
     {
-        $user = $this->Users->get($id, [
+        $this->request->allowMethod(['patch', 'post', 'put']);
+
+        $user = $this->Users->get($this->Auth->user('id'), [
             'contain' => []
         ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
-        }
-        $groups = $this->Users->Groups->find('list', ['limit' => 200]);
-        $this->set(compact('user', 'groups'));
-        $this->set('_serialize', ['user']);
-    }
-
-    /**
-     * Delete method
-     *
-     * @param string|null $id User id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null)
-    {
-        $this->request->allowMethod(['post', 'delete']);
-        $user = $this->Users->get($id);
-        if ($this->Users->delete($user)) {
-            $this->Flash->success(__('The user has been deleted.'));
-        } else {
-            $this->Flash->error(__('The user could not be deleted. Please, try again.'));
+        $user = $this->Users->patchEntity($user, $this->request->getData());
+        if (!$this->Users->save($user)) {
+            $error = $user->errors();
+            $this->errorResponse(400, compact('error'));
+            return;
         }
 
-        return $this->redirect(['action' => 'index']);
     }
+
 }
