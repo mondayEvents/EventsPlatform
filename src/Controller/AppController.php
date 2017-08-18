@@ -88,4 +88,19 @@ class AppController extends Controller
             $this->set('_serialize', true);
         }
     }
+
+    /**
+     * @param int $code
+     * @param array $vars
+     * @return void
+     */
+    public function errorResponse(int $code, array $vars)
+    {
+        $serialize = array_keys($vars);
+        extract($vars);
+
+        $this->response->statusCode($code);
+        $this->set(compact($serialize));
+        $this->set('_serialize', $serialize);
+    }
 }
