@@ -30,7 +30,7 @@ class UsersController extends AppController
     }
 
     /**
-     * Index method
+     * List and paginate all users
      *
      * @return \Cake\Http\Response|void
      */
@@ -45,6 +45,12 @@ class UsersController extends AppController
         $this->set('_serialize', ['users']);
     }
 
+    /**
+     * Retrieve a valid token, if the request body is valid
+     *
+     * @return \Cake\Http\Response|void|null Renders JSON response.
+     * @throws \Cake\Datasource\Exception\UnauthorizedException When user not found.
+     */
     public function token()
     {
         $this->request->allowMethod(['post']);
@@ -62,16 +68,12 @@ class UsersController extends AppController
         ]);
     }
 
-    public function logout()
-    {
-        return $this->redirect($this->Auth->logout());
-    }
     /**
      * View method
      *
      * @param string|null $id User id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @return \Cake\Http\Response|void|null Renders JSON response.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When user not found.
      */
     public function view($id = null)
     {
@@ -86,7 +88,7 @@ class UsersController extends AppController
     /**
      * Add method
      *
-     * @return void
+     * @return \Cake\Http\Response|void|null Renders JSON response.
      * @throws \Cake\Network\Exception\BadRequestException When user is already logged.
      */
     public function add()
@@ -119,7 +121,7 @@ class UsersController extends AppController
     /**
      * Edit method
      *
-     * @return void|null Renders JSON response.
+     * @return \Cake\Http\Response|void|null Renders JSON response.
      * @throws \Cake\Network\Exception\NotFoundException When user not found.
      */
     public function edit()
