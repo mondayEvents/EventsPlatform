@@ -96,9 +96,11 @@ class AppController extends Controller
      */
     public function errorResponse(int $code, array $vars)
     {
-        $this->response->statusCode($code);
+        $serialize = array_keys($vars);
+        extract($vars);
 
-        $this->set(compact('error'));
-        $this->set('_serialize', ['error']);
+        $this->response->statusCode($code);
+        $this->set(compact($serialize));
+        $this->set('_serialize', $serialize);
     }
 }
