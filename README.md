@@ -28,6 +28,8 @@ Make sure to setup your DB connection details inside the **config/app.php** file
 bin/cake migrations migrate
 ```
 
+You can learn more about our endpoints at http://docs.eventos.ninja
+
 &nbsp;
 
 
