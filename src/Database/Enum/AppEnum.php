@@ -1,12 +1,12 @@
 <?php
-namespace App\Abstraction;
+namespace App\Database\Enum;
 
 use Cake\Utility\Text;
 /**
  * Activities Model
  *
  */
-abstract class Enum
+abstract class AppEnum
 {
     private static $constCacheArray = NULL;
 

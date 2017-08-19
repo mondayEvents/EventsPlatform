@@ -3,7 +3,7 @@ namespace App\Model\Table;
 
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
-use Cake\ORM\Table;
+use App\Model\Table\AppTable;
 use Cake\Validation\Validator;
 
 /**
@@ -19,7 +19,7 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\AdditionalEvent[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\AdditionalEvent findOrCreate($search, callable $callback = null, $options = [])
  */
-class AdditionalEventsTable extends Table
+class AdditionalEventsTable extends AppTable
 {
 
     /**

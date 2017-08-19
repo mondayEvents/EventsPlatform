@@ -1,13 +1,13 @@
 <?php
-namespace App\Abstraction;
+namespace App\Database\Enum;
 
-use App\Abstraction\Enum;
+use App\Database\Enum\AppEnum;
 
 /**
- * Event Type Enum Class
+ * Event Type AppEnum Class
  *
  */
-abstract class EventTypeEnum extends Enum
+abstract class EventTypeAppEnum extends AppEnum
 {
     const __default = self::CONFERENCE;
 

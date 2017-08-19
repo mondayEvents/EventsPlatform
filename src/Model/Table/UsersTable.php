@@ -4,7 +4,7 @@ namespace App\Model\Table;
 use Cake\Core\Configure;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
-use Cake\ORM\Table;
+use App\Model\Table\AppTable;
 use Cake\Validation\Validator;
 use Cake\Utility\Security;
 use Firebase\JWT\JWT;
@@ -24,7 +24,7 @@ use Firebase\JWT\JWT;
  * @method \App\Model\Entity\User[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\User findOrCreate($search, callable $callback = null, $options = [])
  */
-class UsersTable extends Table
+class UsersTable extends AppTable
 {
 
     /**
