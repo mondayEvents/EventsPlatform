@@ -3,7 +3,7 @@ namespace App\Model\Table;
 
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
-use Cake\ORM\Table;
+use App\Model\Table\AppTable;
 use Cake\Validation\Validator;
 
 /**
@@ -17,7 +17,7 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\Speaker[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Speaker findOrCreate($search, callable $callback = null, $options = [])
  */
-class SpeakersTable extends Table
+class SpeakersTable extends AppTable
 {
 
     /**

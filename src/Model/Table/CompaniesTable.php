@@ -3,7 +3,7 @@ namespace App\Model\Table;
 
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
-use Cake\ORM\Table;
+use App\Model\Table\AppTable;
 use Cake\Validation\Validator;
 
 /**
@@ -19,7 +19,7 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\Company[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Company findOrCreate($search, callable $callback = null, $options = [])
  */
-class CompaniesTable extends Table
+class CompaniesTable extends AppTable
 {
 
     /**

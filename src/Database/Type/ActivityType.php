@@ -3,7 +3,7 @@ namespace App\Database\Type;
 
 use Cake\Database\Driver;
 use Cake\Database\Type;
-use App\Abstraction\ActivityTypeEnum;
+use App\Database\Enum\ActivityTypeAppEnum;
 use PDO;
 
 class ActivityType extends Type
@@ -19,7 +19,7 @@ class ActivityType extends Type
         if ($value === null) {
             return null;
         }
-        return ActivityTypeEnum::getNameByValue((int) $value);
+        return ActivityTypeAppEnum::getNameByValue((int) $value);
     }
 
     /**
@@ -29,10 +29,10 @@ class ActivityType extends Type
     public function marshal($value)
     {
         if (is_array($value) || $value === null) {
-            $value = ActivityTypeEnum::LECTURE;
+            $value = ActivityTypeAppEnum::LECTURE;
         }
 
-        return ActivityTypeEnum::getNameByValue((int) $value);
+        return ActivityTypeAppEnum::getNameByValue((int) $value);
     }
 
     /**
@@ -42,7 +42,7 @@ class ActivityType extends Type
      */
     public function toDatabase($value, Driver $driver)
     {
-        return ActivityTypeEnum::getValueByName($value);
+        return ActivityTypeAppEnum::getValueByName($value);
     }
 
     /**

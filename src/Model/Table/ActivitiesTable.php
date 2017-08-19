@@ -3,7 +3,7 @@ namespace App\Model\Table;
 
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
-use Cake\ORM\Table;
+use App\Model\Table\AppTable;
 use Cake\Validation\Validator;
 use Cake\Database\Schema\TableSchema;
 
@@ -26,7 +26,7 @@ use Cake\Database\Schema\TableSchema;
  * @method \App\Model\Entity\Activity[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Activity findOrCreate($search, callable $callback = null, $options = [])
  */
-class ActivitiesTable extends Table
+class ActivitiesTable extends AppTable
 {
 
     /**
@@ -59,12 +59,12 @@ class ActivitiesTable extends Table
             'foreignKey' => 'event_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('Panelists', [
-            'foreignKey' => 'panelist_id',
+        $this->belongsTo('Speakers', [
+            'foreignKey' => 'speaker_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('Themes', [
-            'foreignKey' => 'theme_id'
+        $this->belongsTo('Tracks', [
+            'foreignKey' => 'track_id'
         ]);
         $this->belongsTo('EventPlaces', [
             'foreignKey' => 'event_places_id',

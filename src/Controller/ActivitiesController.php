@@ -1,7 +1,7 @@
 <?php
 namespace App\Controller;
 
-use App\Abstraction\ActivityTypeEnum;
+use App\Database\Enum\ActivityTypeAppEnum;
 use App\Controller\AppController;
 use App\Model\Entity\Activity;
 
@@ -78,7 +78,7 @@ class ActivitiesController extends AppController
         $panelists = $this->Activities->Panelists->find('list', ['limit' => 200]);
         $themes = $this->Activities->Themes->find('list', ['limit' => 200]);
         $eventPlaces = $this->Activities->EventPlaces->find('list', ['limit' => 200]);
-        $type = ActivityTypeEnum::getConstants(true);
+        $type = ActivityTypeAppEnum::getConstants(true);
 
         $this->set(compact('activity', 'type', 'panelists', 'themes', 'eventPlaces'));
         $this->set('_serialize', ['activity']);
