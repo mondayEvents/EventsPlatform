@@ -7,7 +7,7 @@ use App\Database\Enum\AppEnum;
  * Event Type AppEnum Class
  *
  */
-abstract class EventTypeAppEnum extends AppEnum
+abstract class EventTypeEnum extends AppEnum
 {
     const __default = self::CONFERENCE;
 
