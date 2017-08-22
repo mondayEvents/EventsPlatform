@@ -2,13 +2,45 @@
 namespace App\Database\Enum;
 
 use Cake\Utility\Text;
+
 /**
- * Activities Model
+ * Singleton for Enumeration base class
  *
  */
 abstract class AppEnum
 {
-    private static $constCacheArray = NULL;
+    /**
+     * @var null
+     */
+    private static $constantsArray = NULL;
+
+    /**
+     * AppEnum constructor is protected
+     * to prevent a new instance
+     *
+     */
+    protected function __construct()
+    {
+    }
+
+    /**
+     * Clone method is private to prevent cloning
+     *
+     * @return void
+     */
+    private function __clone()
+    {
+    }
+
+    /**
+     * Wakeup method is private to prevent
+     * deserialization
+     *
+     * @return void
+     */
+    private function __wakeup()
+    {
+    }
 
     /**
      * Get Constants as array. If parameter pretty is true,
@@ -19,19 +51,20 @@ abstract class AppEnum
      */
     public static function getConstants(bool $pretty = false) : array
     {
-        if (self::$constCacheArray == NULL)
+        if (self::$constantsArray == NULL)
         {
-            self::$constCacheArray = [];
+            self::$constantsArray = [];
         }
 
         $calledClass = get_called_class();
-        if (!array_key_exists($calledClass, self::$constCacheArray))
+
+        if (!array_key_exists($calledClass, self::$constantsArray))
         {
             $reflect = new \ReflectionClass($calledClass);
-            self::$constCacheArray[$calledClass] = $reflect->getConstants();
+            self::$constantsArray[$calledClass] = $reflect->getConstants();
         }
 
-        $constants = self::$constCacheArray[$calledClass];
+        $constants = self::$constantsArray[$calledClass];
 
         if ($pretty)
         {
@@ -107,13 +140,14 @@ abstract class AppEnum
     public static function getValueByName ($value) : int
     {
 
+        $value = Text::slug(strtoupper($value), '_');
         if (!self::isValidName($value))
         {
             throw new \Exception("Invalid enum name");
         }
 
         $constants = self::getConstants();
-        return $constants[Text::slug(strtoupper($value), '_')];
+        return $constants[$value];
     }
 
     /**
