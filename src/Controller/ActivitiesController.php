@@ -1,7 +1,7 @@
 <?php
 namespace App\Controller;
 
-use App\Database\Enum\ActivityTypeAppEnum;
+use App\Database\Enum\ActivityTypeEnum;
 use App\Controller\AppController;
 use App\Model\Entity\Activity;
 
