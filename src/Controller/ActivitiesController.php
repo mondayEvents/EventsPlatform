@@ -98,14 +98,7 @@ class ActivitiesController extends AppController
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $activity = $this->Activities->patchEntity($activity, $this->request->getData());
-    
-    public function types()
-    {
-        $this->request->allowMethod(['get']);
-        $types = ActivityTypeEnum::getConstants(true);
-        $this->set(compact('types'));
-        $this->set('_serialize', ['types']);
-    }
+            
             if ($this->Activities->save($activity)) {
                 $this->Flash->success(__('The activity has been saved.'));
 
@@ -139,5 +132,13 @@ class ActivitiesController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+    
+    public function types()
+    {
+        $this->request->allowMethod(['get']);
+        $types = ActivityTypeEnum::getConstants(true);
+        $this->set(compact('types'));
+        $this->set('_serialize', ['types']);
     }
 }
