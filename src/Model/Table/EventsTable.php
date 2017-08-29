@@ -184,6 +184,11 @@ class EventsTable extends AppTable
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
 
+        $rules->add(new MatchDateRanges(), '_matchDateRanges', [
+            'errorField' => 'teste',
+            'message' =>  __('This place is already in use at the specified time range')
+        ]);
+        
         return $rules;
     }
 }
