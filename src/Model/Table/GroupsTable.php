@@ -30,6 +30,8 @@ class GroupsTable extends AppTable
     {
         parent::initialize($config);
 
+        $this->addBehavior('Acl.Acl', ['type' => 'requester']);
+
         $this->setTable('groups');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
