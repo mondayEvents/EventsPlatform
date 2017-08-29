@@ -123,6 +123,40 @@ class EventsTable extends AppTable
 
         return $validator;
     }
+
+
+    /**
+     * Checks the given date is not in past
+     *
+     * @param string $date Date in UTC
+     * @param array $context Current request data
+     * @return bool Returns true if date is future. If not, returns false.
+     */
+    public function notPast ($date, $context)
+    {
+        $is_past = Time::createFromFormat('Y-m-d H:i:s', $date, 'UTC')->isPast();
+        if ($is_past) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checks if current users is ownser of a set of Event entities.
+     *
+     * @param Event[] $events
+     * @return bool If user owns ALL events, returns true. If not, returns false.
+     */
+    public function ownershipChecker (array $events): bool
+    {
+        $isOwner = true;
+        foreach ($events as $event) {
+            if (!$event->isOwner) {
+                $isOwner = false;
+            }
+        }
+        return $isOwner;
+    }
     
     /**
      * Checks the start_at/end_at integrity
