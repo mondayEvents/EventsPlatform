@@ -132,7 +132,10 @@ class ActivitiesTable extends AppTable
             'errorField' => 'activity',
             'message' =>  __('This place is already in use at the specified time range')
         ]);
-
+	$rules->add(new IsExclusive(), '_isExclusive', [
+            'errorField' => 'activity',
+            'message' =>  __('An exclusive activity will occur at the selected time range')
+        ]);
 
         return $rules;
     }
