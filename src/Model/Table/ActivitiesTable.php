@@ -128,6 +128,11 @@ class ActivitiesTable extends AppTable
         $rules->add($rules->existsIn(['panelist_id'], 'Panelists'));
         $rules->add($rules->existsIn(['theme_id'], 'Themes'));
         $rules->add($rules->existsIn(['event_places_id'], 'EventPlaces'));
+	$rules->add(new NotSameTimeAndPlace(), '_notSameTimeAndPlace', [
+            'errorField' => 'activity',
+            'message' =>  __('This place is already in use at the specified time range')
+        ]);
+
 
         return $rules;
     }
