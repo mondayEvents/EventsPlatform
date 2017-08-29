@@ -125,19 +125,16 @@ class UsersTable extends AppTable
         {
             throw new \Exception(__('Not enough data for token generation'));
         }
-
+ 
         $input = JWT::encode(
                 [
-                    'sub' => [
-                        'uid' => $user_id,
-                        'gid' => base64_encode(Security::encrypt($group_id, Configure::read('encriptionKey')))
-                    ],
+                    'uid' => $user_id,
+                    'gid' => base64_encode(Security::encrypt($group_id, Configure::read('encriptionKey'))),
                     'jti' => $jti,
                     'exp' =>  time() + 604800
                 ],
                 Security::salt()
             );
-
+ 
         return $input;
     }
-}
