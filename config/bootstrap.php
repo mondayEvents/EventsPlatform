@@ -63,6 +63,7 @@ use Cake\Mailer\Email;
 use Cake\Network\Request;
 use Cake\Utility\Inflector;
 use Cake\Utility\Security;
+use Cake\Routing\DispatcherFactory;
 
 /*
  * Read configuration file and inject configuration into various
@@ -78,6 +79,9 @@ try {
 } catch (\Exception $e) {
     exit($e->getMessage() . "\n");
 }
+
+date_default_timezone_set('America/Fortaleza');
+//date_default_timezone_set('UTC');
 
 /*
  * Load an environment local configuration file.
@@ -223,8 +227,13 @@ if (Configure::read('debug')) {
 
 Configure::write('encriptionKey', 'U36jzKBPZPmt5uTKu0dYExXemSHgKN58');
 
+Type::map('AssociationRequestType', 'App\Database\Type\AssociationRequestType');
 Type::map('ActivityType', 'App\Database\Type\ActivityType');
 Type::map('EventType', 'App\Database\Type\EventType');
 
 Plugin::load('ADmad/JwtAuth');
 Plugin::load('Acl', ['bootstrap' => true]);
+Plugin::load('PipingBag', ['bootstrap' => true]);
+
+//use PipingBag\Di\PipingBag;
+//DispatcherFactory::add(PipingBag::get('PipingBag\Routing\Filter\ControllerFactoryFilter'));
