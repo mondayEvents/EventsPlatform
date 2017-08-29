@@ -97,7 +97,7 @@ class UsersController extends AppController
 
         if ($this->Auth->identify())
         {
-            throw new BadRequestException(__("You are already logged in!"));
+            throw new BadRequestException(__("You are already registered or logged in!"));
         }
 
         $user = $this->Users->newEntity();
@@ -106,12 +106,12 @@ class UsersController extends AppController
         $user->jti = Text::uuid();
 
         if (!$this->Users->save($user)) {
-            $error = $user->errors();
-            $this->errorResponse(400, compact('error'));
+            $error = $user->getErrors();
+            $this->response(400, compact('error'));
             return;
         }
 
-        $JWT = $this->Users->createToken($user->id);
+        $JWT = $this->Users->createToken($user->id, $user->groups_id, $user->jti);
 
         $this->set(compact('JWT'));
         $this->set('_serialize', ['JWT']);
@@ -128,14 +128,17 @@ class UsersController extends AppController
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
 
-        $user = $this->Users->get($this->Auth->user('id'), [
-            'contain' => []
+        $user = $this->Users->get($this->Auth->user('uid'), [
+            'contain' => ['Groups']
         ]);
 
+//        dd($user);
+
         $user = $this->Users->patchEntity($user, $this->request->getData());
+
         if (!$this->Users->save($user)) {
-            $error = $user->errors();
-            $this->errorResponse(400, compact('error'));
+            $error = $user->getErrors();
+            $this->response(400, compact('error'));
             return;
         }
 

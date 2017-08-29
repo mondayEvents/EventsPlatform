@@ -7,7 +7,7 @@ use Cake\ORM\Entity;
  * EventPlace Entity
  *
  * @property string $id
- * @property string $events_id
+ * @property string $event_id
  * @property string $name
  * @property string $ltd
  * @property string $lat
@@ -29,6 +29,7 @@ class EventPlace extends Entity
      */
     protected $_accessible = [
         '*' => true,
-        'id' => false
+        'id' => false,
+        'event_id' => false
     ];
 }
