@@ -3,7 +3,7 @@ namespace App\Database\Type;
 
 use Cake\Database\Driver;
 use Cake\Database\Type;
-use App\Database\Enum\EventTypeAppEnum;
+use App\Database\Enum\EventTypeEnum as TypeEnum;
 use PDO;
 
 class EventType extends Type
@@ -16,11 +16,10 @@ class EventType extends Type
      */
     public function toPHP($value, Driver $driver)
     {
-
         if ($value === null) {
             return null;
         }
-        return EventTypeAppEnum::getNameByValue((int) $value);
+        return TypeEnum::getNameByValue((int) $value);
     }
 
     /**
@@ -29,12 +28,10 @@ class EventType extends Type
      */
     public function marshal($value)
     {
-
         if (is_array($value) || $value === null) {
-            $value = EventTypeAppEnum::CONFERENCE;
+            $value = TypeEnum::__default;
         }
-
-        return EventTypeAppEnum::getNameByValue((int) $value);
+        return TypeEnum::getNameByValue((int) $value);
     }
 
     /**
@@ -44,8 +41,7 @@ class EventType extends Type
      */
     public function toDatabase($value, Driver $driver)
     {
-
-        return EventTypeAppEnum::getValueByName(strtolower($value));
+        return TypeEnum::getValueByName(strtolower($value));
     }
 
     /**
@@ -55,7 +51,6 @@ class EventType extends Type
      */
     public function toStatement($value, Driver $driver)
     {
-
         if ($value === null) {
             return PDO::PARAM_NULL;
         }

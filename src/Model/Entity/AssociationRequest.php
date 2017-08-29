@@ -4,14 +4,21 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * AdditionalEvent Entity
+ * AssociationRequest Entity
  *
- * @property string $super_event_id
+ * @property string $id
+ * @property string $user_id
  * @property string $event_id
+ * @property string $event_parent_id
+ * @property string $message
+ * @property int $status
+ * @property bool $active
  *
+ * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\Event $event
+ * @property \App\Model\Entity\Event $event_parent
  */
-class AdditionalEvent extends Entity
+class AssociationRequest extends Entity
 {
 
     /**
@@ -25,17 +32,6 @@ class AdditionalEvent extends Entity
      */
     protected $_accessible = [
         '*' => true,
-        'super_event_id' => false,
-        'event_id' => false
-    ];
-
-    /**
-     * Fields that are excluded from JSON versions of the entity.
-     *
-     * @var array
-     */
-    protected $_hidden = [
-        'super_event_id',
-        'event_id'
+        'id' => false
     ];
 }
