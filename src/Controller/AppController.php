@@ -17,6 +17,7 @@ namespace App\Controller;
 use Cake\Controller\Controller;
 use Cake\Event\Event;
 use Cake\Network\Exception\BadRequestException;
+use Cake\Http\ServerRequest;
 
 /**
  * Application Controller
@@ -94,7 +95,7 @@ abstract class AppController extends Controller
      * @param array $vars
      * @return void
      */
-    public function errorResponse(int $code, array $vars)
+    public function response(int $code, array $vars)
     {
         $serialize = array_keys($vars);
         extract($vars);
