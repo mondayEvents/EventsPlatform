@@ -56,6 +56,11 @@ Router::scope('/', function (RouteBuilder $routes) {
      */
     $routes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
 
+    $routes->connect('/events/request-association/*', [
+        'controller' => 'AssociationRequests',
+        'action' => 'requestAssociation'
+    ]);
+
     /**
      * Connect catchall routes for all controllers.
      *
