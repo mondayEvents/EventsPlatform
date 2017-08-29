@@ -138,3 +138,4 @@ class UsersTable extends AppTable
  
         return $input;
     }
+}
