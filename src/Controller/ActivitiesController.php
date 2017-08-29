@@ -48,39 +48,34 @@ class ActivitiesController extends AppController
         $this->set('_serialize', ['activity']);
     }
 
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
-    public function add(string $event_id)
+public function add(string $event_id)
     {
-        $event = $this->Activities->Events->get($event_id);
 
-        if (!$event->isOwner($this->Auth->User('id'))) {
-            $this->Flash->error(__('You dont own that event'));
-            return $this->redirect(['action' => 'index']);
+        $this->request->allowMethod(['post']);
+
+        $event = $this->Activities->Events->get($event_id);
+        if (!$event->isOwner($this->Auth->user('uid'))) {
+            $error = ["_notification" => __("Sorry, but you do not own this event")];
+            $this->response(400, compact('error'));
+            return;
         }
 
         $activity = $this->Activities->newEntity();
-        $activity->event_id = $event_id;
+        $activity->event_id = $event->id;
+        $activity = $this->Activities->patchEntity($activity, $this->request->getData());
 
-        if ($this->request->is('post')) {
-            $activity = $this->Activities->patchEntity($activity, $this->request->getData());
-            if ($this->Activities->save($activity)) {
-                $this->Flash->success(__('The activity has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The activity could not be saved. Please, try again.'));
+        if (isset($activity->event_place))
+        {
+            $activity->event_place->event_id = $event->id;
         }
 
-        $panelists = $this->Activities->Panelists->find('list', ['limit' => 200]);
-        $themes = $this->Activities->Themes->find('list', ['limit' => 200]);
-        $eventPlaces = $this->Activities->EventPlaces->find('list', ['limit' => 200]);
-        $type = ActivityTypeAppEnum::getConstants(true);
+        if (!$this->Activities->save($activity)) {
+            $error = $activity->getErrors();
+            $this->response(400, compact('error'));
+            return;
+        }
 
-        $this->set(compact('activity', 'type', 'panelists', 'themes', 'eventPlaces'));
+        $this->set(compact('activity'));
         $this->set('_serialize', ['activity']);
     }
 
