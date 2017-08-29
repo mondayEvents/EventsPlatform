@@ -81,12 +81,14 @@ class User extends Entity
 
     public function bindNode ($user)
     {
+
         $group_id = Security::decrypt(
             base64_decode(
-                $user['Users']['sub']['gid']),
+                $user['Users']['gid']),
                 Configure::read('encriptionKey'
             )
         );
+
         return ['model' => 'Groups', 'foreign_key' => $group_id];
     }
 
