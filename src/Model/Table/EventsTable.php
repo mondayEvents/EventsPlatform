@@ -55,8 +55,16 @@ class EventsTable extends AppTable
         $this->setPrimaryKey('id');
 
         $this->belongsTo('Users', [
-            'foreignKey' => 'user_id',
             'joinType' => 'INNER'
+        ]);
+        $this->belongsTo('ParentEvents', [
+            'className' => 'Events',
+            'foreignKey' => 'parent_id'
+        ]);
+
+        $this->hasMany('SubEvents', [
+            'className' => 'Events',
+            'foreignKey' => 'parent_id'
         ]);
         $this->hasMany('Activities', [
             'foreignKey' => 'event_id'
@@ -64,14 +72,17 @@ class EventsTable extends AppTable
         $this->hasMany('Coupons', [
             'foreignKey' => 'event_id'
         ]);
-
-        $this->hasMany('AdditionalEvents', [
-            'className' => 'AdditionalEvents',
-            'foreignKey' => 'super_event_id',
-            'joinTable' => 'additional_events',
-        ]);
-
         $this->hasMany('EventManagers', [
+            'foreignKey' => 'event_id'
+        ]);
+        $this->hasMany('Childrens', [
+            'foreignKey' => 'parent_id'
+        ]);
+        $this->hasMany('AssociationRequests', [
+            'foreignKey' => 'event_id',
+            'bindingKey' => 'asked_event_id'
+        ]);
+        $this->hasMany('EventPlaces', [
             'foreignKey' => 'event_id'
         ]);
         $this->hasMany('Registrations', [
