@@ -28,17 +28,23 @@ class EventPlacesTable extends AppTable
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
+    
+	public function initialize(array $config)
     {
         parent::initialize($config);
-
+ 
         $this->setTable('event_places');
         $this->setDisplayField('name');
-        $this->setPrimaryKey('id');
-
+        $this->setPrimaryKey(['id', 'event_id']);
+ 
         $this->belongsTo('Events', [
-            'foreignKey' => 'events_id',
+            'foreignKey' => 'event_id',
+            'bindingKey' => 'id',
             'joinType' => 'INNER'
+        ]);
+ 
+        $this->hasMany('Activities', [
+            'foreignKey' => 'event_place_id',
         ]);
     }
 
@@ -80,6 +86,10 @@ class EventPlacesTable extends AppTable
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['events_id'], 'Events'));
+		
+		$rules->add($rules->isUnique(
+            ['name', 'event_id'], __('Your event already has a place with that name')
+        ));
 
         return $rules;
     }
