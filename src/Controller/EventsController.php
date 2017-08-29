@@ -4,7 +4,7 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Exception;
 use Cake\Event\Event;
-use App\Database\Enum\EventTypeAppEnum;
+use App\Database\Enum\EventTypeEnum as EventType;
 
 /**
  * Events Controller
@@ -165,4 +165,19 @@ class EventsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+    
+    /**
+     * List all events types for
+     * selecting porpuses
+     *
+     * @return \Cake\Http\Response|void|null Renders JSON response.
+     */
+    public function types ()
+    {
+        $this->request->allowMethod(['get']);
+
+        $types = EventType::getConstants(true);
+        $this->response(200, compact('types'));
+    }
+    
 }
