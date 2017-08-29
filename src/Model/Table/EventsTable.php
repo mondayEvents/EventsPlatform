@@ -100,13 +100,19 @@ class EventsTable extends AppTable
 
         $validator
             ->dateTime('date_start')
-            ->requirePresence('date_start', 'create')
-            ->notEmpty('date_start');
+            ->notEmpty('date_start')
+            ->add('date_start', '_notPast', [
+                'rule' => [$this, 'notPast'],
+                'message' => 'The Activity start must be in the future'
+            ]);
 
         $validator
             ->dateTime('date_end')
-            ->requirePresence('date_end', 'create')
-            ->notEmpty('date_end');
+            ->notEmpty('date_end')
+            ->add('end_at', '_biggerThanStart', [
+                'rule' => [$this, 'biggerThanStart'],
+                'message' => 'The Activity end must be bigger than its start'
+            ]);
 
         $validator
             ->allowEmpty('tags');
@@ -116,6 +122,21 @@ class EventsTable extends AppTable
             ->notEmpty('type');
 
         return $validator;
+    }
+    
+    /**
+     * Checks the start_at/end_at integrity
+     *
+     * @param string $end_at
+     * @param array $request
+     * @return bool
+     */
+    public function biggerThanStart ($end_at, $request)
+    {
+        if ($end_at <= $request['data']['date_start']) {
+            return false;
+        }
+        return true;
     }
 
     /**
