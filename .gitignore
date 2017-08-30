@@ -1,4 +1,6 @@
 .DS_Store
-/tmp/*
-/logs/*
-/config/app.php
+.idea/*
+tmp/*
+logs/*
+vendor/*
+config/app.php

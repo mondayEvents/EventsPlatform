@@ -8,16 +8,18 @@ use Cake\ORM\Entity;
  *
  * @property string $id
  * @property string $user_id
+ * @property $parent_id
  * @property string $name
  * @property \Cake\I18n\FrozenTime $date_start
  * @property \Cake\I18n\FrozenTime $date_end
  * @property string $tags
  * @property $type
+ * @property $published
  *
  * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\Activity[] $activities
  * @property \App\Model\Entity\Coupon[] $coupons
- * @property \App\Model\Entity\EventAssociation[] $event_associations
+ * @property \App\Model\Entity\Event[] $sub_events
  * @property \App\Model\Entity\Registration[] $registrations
  * @property \App\Model\Entity\Sponsorship[] $sponsorships
  * @property \App\Model\Entity\EventManager[] $event_managers
@@ -36,7 +38,18 @@ class Event extends Entity
      */
     protected $_accessible = [
         '*' => true,
+        'parent_id' => false,
         'id' => false
+    ];
+
+    /**
+     * Fields that are excluded from JSON versions of the entity.
+     *
+     * @var array
+     */
+    protected $_hidden = [
+        'user_id',
+        'parent_id'
     ];
 
     /**
@@ -47,17 +60,20 @@ class Event extends Entity
      */
     public function isOwner($user): bool
     {
-        if ($user === $this->user_id)
-        {
+        if ($user === $this->user_id) {
             return true;
         }
 
-        if (!$this->event_managers)
-        {
+        if (!$this->event_managers) {
             return false;
         }
 
         $user_ids = array_column($this->event_managers,'user_id');
         return array_search($user, $user_ids, true) !== false;
+    }
+
+    public function isPublished ()
+    {
+        return (bool) $this->published;
     }
 }

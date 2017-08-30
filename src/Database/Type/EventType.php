@@ -3,7 +3,7 @@ namespace App\Database\Type;
 
 use Cake\Database\Driver;
 use Cake\Database\Type;
-use App\Abstraction\EventTypeEnum;
+use App\Database\Enum\EventTypeEnum;
 use PDO;
 
 class EventType extends Type
@@ -16,7 +16,6 @@ class EventType extends Type
      */
     public function toPHP($value, Driver $driver)
     {
-
         if ($value === null) {
             return null;
         }
@@ -29,11 +28,9 @@ class EventType extends Type
      */
     public function marshal($value)
     {
-
         if (is_array($value) || $value === null) {
-            $value = EventTypeEnum::CONFERENCE;
+            $value = StatusEnum::__default;
         }
-
         return EventTypeEnum::getNameByValue((int) $value);
     }
 
@@ -44,7 +41,6 @@ class EventType extends Type
      */
     public function toDatabase($value, Driver $driver)
     {
-
         return EventTypeEnum::getValueByName(strtolower($value));
     }
 
@@ -55,7 +51,6 @@ class EventType extends Type
      */
     public function toStatement($value, Driver $driver)
     {
-
         if ($value === null) {
             return PDO::PARAM_NULL;
         }

@@ -135,7 +135,7 @@ class UsersTable extends AppTable
                 ],
                 Security::salt()
             );
-
+      
         return $input;
     }
 }

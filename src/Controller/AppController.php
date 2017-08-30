@@ -17,6 +17,7 @@ namespace App\Controller;
 use Cake\Controller\Controller;
 use Cake\Event\Event;
 use Cake\Network\Exception\BadRequestException;
+use Cake\Http\ServerRequest;
 
 /**
  * Application Controller
@@ -26,7 +27,7 @@ use Cake\Network\Exception\BadRequestException;
  *
  * @link http://book.cakephp.org/3.0/en/controllers.html#the-app-controller
  */
-class AppController extends Controller
+abstract class AppController extends Controller
 {
 
     /**
@@ -39,44 +40,39 @@ class AppController extends Controller
     {
         parent::initialize();
 
-
-
         $this->loadComponent('Acl.Acl');
         $this->loadComponent('RequestHandler');
-        $this->loadComponent('Flash');
-        $this->loadComponent('Security');
-        $this->loadComponent('Csrf');
+//        $this->loadComponent('Flash');
+//        $this->loadComponent('Security');
 
         /*
          * Auth Component with JSON Web Token service
          */
-        $this->loadComponent('Auth', [
-//            'storage' => 'Memory',
-            'authenticate' => [
-                'Form' => [
-                    'contain' => [],
-                    'scope' => ['Users.deleted IS NUll']
+        $this->loadComponent('Auth',
+            [
+                'storage' => 'Memory',
+                'authenticate' => [
+                    'Form' => [
+                        'scope' => ['Users.active' => 1]
+                    ],
+                    'ADmad/JwtAuth.Jwt' => [
+                        'parameter' => 'token',
+                        'userModel' => 'Users',
+                        'contain' => [],
+                        'scope' => ['Users.deleted IS NUll'],
+                        'fields' => [
+                            'username' => 'id',
+                        ],
+                        'queryDatasource' => false
+                    ]
                 ],
-//                'ADmad/JwtAuth.Jwt' => [
-//                    'parameter' => 'token',
-//                    'userModel' => 'Users',
-//                    'contain' => [
-//                        'Recurrences',
-//                        'Details'
-//                    ],
-//                    'scope' => ['Users.deleted IS NUll'],
-//                    'fields' => [
-//                        'username' => 'id',
-//                    ],
-//                    'queryDatasource' => false
-//                ]
-            ],
-            'authorize' => [
-                'Acl.Actions' => ['actionPath' => 'controllers']
-            ],
-            'unauthorizedRedirect' => false,
-            'checkAuthIn' => 'Controller.initialize'
-        ]);
+                'authorize' => [
+                    'Acl.Actions' => ['actionPath' => 'controllers']
+                ],
+                'unauthorizedRedirect' => false,
+                'checkAuthIn' => 'Controller.initialize'
+            ]
+        );
     }
 
     /**
@@ -92,5 +88,20 @@ class AppController extends Controller
         ) {
             $this->set('_serialize', true);
         }
+    }
+
+    /**
+     * @param int $code
+     * @param array $vars
+     * @return void
+     */
+    public function response(int $code, array $vars)
+    {
+        $serialize = array_keys($vars);
+        extract($vars);
+
+        $this->response->statusCode($code);
+        $this->set(compact($serialize));
+        $this->set('_serialize', $serialize);
     }
 }

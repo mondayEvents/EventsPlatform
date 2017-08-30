@@ -2,8 +2,12 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-use Cake\I18n\Time;
-use Cake\Network\Exception\UnauthorizedException;
+use Cake\{
+    I18n\Time,
+    Network\Exception\UnauthorizedException,
+    Network\Exception\BadRequestException,
+    Utility\Text
+};
 
 /**
  * Users Controller
@@ -22,11 +26,11 @@ class UsersController extends AppController
     public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['add', 'logout']);
+        $this->Auth->allow(['add', 'token']);
     }
 
     /**
-     * Index method
+     * List and paginate all users
      *
      * @return \Cake\Http\Response|void
      */
@@ -41,28 +45,35 @@ class UsersController extends AppController
         $this->set('_serialize', ['users']);
     }
 
-    public function login()
+    /**
+     * Retrieve a valid token, if the request body is valid
+     *
+     * @return \Cake\Http\Response|void|null Renders JSON response.
+     * @throws \Cake\Datasource\Exception\UnauthorizedException When user not found.
+     */
+    public function token()
     {
-        if ($this->request->is('post')) {
-            $user = $this->Auth->identify();
-            if ($user) {
-                $this->Auth->setUser($user);
-                return $this->redirect($this->Auth->redirectUrl());
-            }
-            $this->Flash->error(__('Invalid username or password, try again'));
+        $this->request->allowMethod(['post']);
+
+        $user = $this->Auth->identify();
+        if (!$user) {
+            throw new UnauthorizedException('Invalid username or password');
         }
+
+        $this->set(['JWT' => $this->Users->createToken($user['id'], $user['group_id'], $user['jti'])]);
+        unset($user['group_id'], $user['jti']);
+
+        $this->set(['user' => $user,
+            '_serialize' => ['JWT', 'user']
+        ]);
     }
 
-    public function logout()
-    {
-        return $this->redirect($this->Auth->logout());
-    }
     /**
      * View method
      *
      * @param string|null $id User id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @return \Cake\Http\Response|void|null Renders JSON response.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When user not found.
      */
     public function view($id = null)
     {
@@ -77,72 +88,60 @@ class UsersController extends AppController
     /**
      * Add method
      *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
+     * @return \Cake\Http\Response|void|null Renders JSON response.
+     * @throws \Cake\Network\Exception\BadRequestException When user is already logged.
      */
     public function add()
     {
-        $user = $this->Users->newEntity();
+        $this->request->allowMethod(['post']);
 
-        if ($this->request->is('post')) {
-
-//            dd($this->request->getData());
-
-            $user = $this->Users->patchEntity($user, $this->request->getData());
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
+        if ($this->Auth->identify())
+        {
+            throw new BadRequestException(__("You are already registered or logged in!"));
         }
-        $groups = $this->Users->Groups->find('list', ['limit' => 200]);
-        $this->set(compact('user', 'groups'));
-        $this->set('_serialize', ['user']);
+
+        $user = $this->Users->newEntity();
+        $user = $this->Users->patchEntity($user, $this->request->getData());
+        $user->groups_id = 2;
+        $user->jti = Text::uuid();
+
+        if (!$this->Users->save($user)) {
+            $error = $user->getErrors();
+            $this->response(400, compact('error'));
+            return;
+        }
+
+        $JWT = $this->Users->createToken($user->id, $user->groups_id, $user->jti);
+
+        $this->set(compact('JWT'));
+        $this->set('_serialize', ['JWT']);
+
     }
 
     /**
      * Edit method
      *
-     * @param string|null $id User id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     * @return \Cake\Http\Response|void|null Renders JSON response.
+     * @throws \Cake\Network\Exception\NotFoundException When user not found.
      */
-    public function edit($id = null)
+    public function edit()
     {
-        $user = $this->Users->get($id, [
-            'contain' => []
+        $this->request->allowMethod(['patch', 'post', 'put']);
+
+        $user = $this->Users->get($this->Auth->user('uid'), [
+            'contain' => ['Groups']
         ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
-        }
-        $groups = $this->Users->Groups->find('list', ['limit' => 200]);
-        $this->set(compact('user', 'groups'));
-        $this->set('_serialize', ['user']);
-    }
+//        dd($user);
 
-    /**
-     * Delete method
-     *
-     * @param string|null $id User id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null)
-    {
-        $this->request->allowMethod(['post', 'delete']);
-        $user = $this->Users->get($id);
-        if ($this->Users->delete($user)) {
-            $this->Flash->success(__('The user has been deleted.'));
-        } else {
-            $this->Flash->error(__('The user could not be deleted. Please, try again.'));
+        $user = $this->Users->patchEntity($user, $this->request->getData());
+
+        if (!$this->Users->save($user)) {
+            $error = $user->getErrors();
+            $this->response(400, compact('error'));
+            return;
         }
 
-        return $this->redirect(['action' => 'index']);
     }
+
 }

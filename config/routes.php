@@ -56,6 +56,11 @@ Router::scope('/', function (RouteBuilder $routes) {
      */
     $routes->connect('/pages/*', ['controller' => 'Pages', 'action' => 'display']);
 
+    $routes->connect('/events/request-association/*', [
+        'controller' => 'AssociationRequests',
+        'action' => 'requestAssociation'
+    ]);
+
     /**
      * Connect catchall routes for all controllers.
      *
@@ -74,6 +79,9 @@ Router::scope('/', function (RouteBuilder $routes) {
      */
     $routes->fallbacks(DashedRoute::class);
 });
+
+//Router::mapResources(['Users','Events']);
+Router::extensions(['json', 'xml']);
 
 /**
  * Load all plugin routes. See the Plugin documentation on
