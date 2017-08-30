@@ -1,7 +1,7 @@
 <?php
 namespace App\Controller;
 
-use App\Database\Enum\ActivityTypeAppEnum;
+use App\Database\Enum\ActivityTypeEnum as ActivityType;
 use App\Controller\AppController;
 use App\Model\Entity\Activity;
 
@@ -14,6 +14,17 @@ use App\Model\Entity\Activity;
  */
 class ActivitiesController extends AppController
 {
+
+    /**
+     * Initialize Controller
+     *
+     * @return void
+     */
+    public function initialize()
+    {
+        parent::initialize();
+        $this->Auth->allow(['types']);
+    }
 
     /**
      * Index method
@@ -48,7 +59,15 @@ class ActivitiesController extends AppController
         $this->set('_serialize', ['activity']);
     }
 
-public function add(string $event_id)
+    /**
+     * Add method
+     *
+     * @param $event_id
+     *
+     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When event not found.
+     */
+    public function add(string $event_id)
     {
 
         $this->request->allowMethod(['post']);
@@ -79,6 +98,16 @@ public function add(string $event_id)
         $this->set('_serialize', ['activity']);
     }
 
+    public function types ()
+    {
+        $this->request->allowMethod(['get']);
+
+        $types = ActivityType::getConstants(true);
+
+        $this->set(compact('types'));
+        $this->set('_serialize', ['types']);
+    }
+
     /**
      * Edit method
      *
@@ -93,7 +122,6 @@ public function add(string $event_id)
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $activity = $this->Activities->patchEntity($activity, $this->request->getData());
-            
             if ($this->Activities->save($activity)) {
                 $this->Flash->success(__('The activity has been saved.'));
 
@@ -127,13 +155,5 @@ public function add(string $event_id)
         }
 
         return $this->redirect(['action' => 'index']);
-    }
-    
-    public function types()
-    {
-        $this->request->allowMethod(['get']);
-        $types = ActivityTypeEnum::getConstants(true);
-        $this->set(compact('types'));
-        $this->set('_serialize', ['types']);
     }
 }

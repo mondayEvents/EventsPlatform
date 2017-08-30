@@ -6,6 +6,13 @@ use Cake\ORM\RulesChecker;
 use App\Model\Table\AppTable;
 use Cake\Validation\Validator;
 use Cake\Database\Schema\TableSchema;
+use App\Database\Enum\ActivityTypeEnum as ActivityType;
+use Cake\I18n\Time;
+
+use App\Model\Rule\{
+    NotSameTimeAndPlace,
+    IsExclusive
+};
 
 /**
  * Activities Model
@@ -57,25 +64,21 @@ class ActivitiesTable extends AppTable
 
         $this->belongsTo('Events', [
             'foreignKey' => 'event_id',
-            'joinType' => 'INNER'
+//            'joinType' => 'INNER'
         ]);
         $this->belongsTo('Speakers', [
             'foreignKey' => 'speaker_id',
-            'joinType' => 'INNER'
+//            'joinType' => 'INNER'
         ]);
         $this->belongsTo('Tracks', [
             'foreignKey' => 'track_id'
         ]);
         $this->belongsTo('EventPlaces', [
-            'foreignKey' => 'event_places_id',
-            'joinType' => 'INNER'
+            'foreignKey' => 'event_place_id',
+            'bindingKey' => 'id',
+//            'joinType' => 'INNER'
         ]);
-        $this->hasMany('ActivityPlaces', [
-            'foreignKey' => 'activity_id'
-        ]);
-        $this->hasMany('Concomitance', [
-            'foreignKey' => 'activity_id'
-        ]);
+
         $this->hasMany('RegistrationItems', [
             'foreignKey' => 'activity_id'
         ]);
@@ -103,15 +106,84 @@ class ActivitiesTable extends AppTable
             ->notEmpty('description');
 
         $validator
-            ->decimal('price')
-            ->requirePresence('price', 'create')
-            ->notEmpty('price');
-
-        $validator
             ->requirePresence('type', 'create')
             ->notEmpty('type');
 
+        $validator
+            ->decimal('price')
+            ->requirePresence('price', function ($context) {
+                if (!isset($context['data']['type'])) { return true; }
+                return $context['data']['type'] !== ActivityType::SPARE_TIME;
+            })
+            ->notEmpty('price');
+
+
+        $validator
+            ->requirePresence('start_at', 'create')
+            ->notEmpty('start_at')
+            ->dateTime('start_at')
+            ->add('start_at', '_notPast', [
+                'rule' => [$this, 'notPast'],
+                'message' => 'The Activity start must be in the future'
+            ]);
+
+        $validator
+            ->requirePresence('end_at', 'create')
+            ->notEmpty('end_at')
+            ->dateTime('start_at')
+            ->add('end_at', '_biggerThanStart', [
+                'rule' => [$this, 'biggerThanStart'],
+                'message' => 'The Activity end must be bigger than its start'
+            ]);
+
+        $validator
+            ->requirePresence('speaker_id', function ($context) {
+                if (!isset($context['data']['type'])) { return true; }
+                return $context['data']['type'] !== ActivityType::SPARE_TIME;
+            });
+
+        $validator
+            ->requirePresence('event_place_id', function ($context) {
+                if (!isset($context['data']['type'])) { return true; }
+                return $context['data']['type'] !== ActivityType::SPARE_TIME;
+            });
+
         return $validator;
+    }
+
+    /**
+     * Checks the start_at/end_at integrity
+     *
+     * @param $value
+     * @param $context
+     * @return bool
+     */
+    public function biggerThanStart ($value, $context)
+    {
+
+        if ($value <= $context['data']['start_at'])
+        {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checks the start_at/end_at integrity
+     *
+     * @param $value
+     * @param $context
+     * @return bool
+     */
+    public function notPast ($value, $context)
+    {
+
+        $is_past = Time::createFromFormat('Y-m-d H:i:s', $value, 'UTC')->isPast();
+        if ($is_past)
+        {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -125,14 +197,16 @@ class ActivitiesTable extends AppTable
     {
         $rules->add($rules->isUnique(['id']));
         $rules->add($rules->existsIn(['event_id'], 'Events'));
-        $rules->add($rules->existsIn(['panelist_id'], 'Panelists'));
-        $rules->add($rules->existsIn(['theme_id'], 'Themes'));
-        $rules->add($rules->existsIn(['event_places_id'], 'EventPlaces'));
-	$rules->add(new NotSameTimeAndPlace(), '_notSameTimeAndPlace', [
+        $rules->add($rules->existsIn(['speaker_id'], 'Speakers'));
+        $rules->add($rules->existsIn(['track_id'], 'Tracks'));
+//        $rules->add($rules->existsIn(['event_place_id', 'event_id'], 'EventPlaces'));
+
+        $rules->add(new NotSameTimeAndPlace(), '_notSameTimeAndPlace', [
             'errorField' => 'activity',
             'message' =>  __('This place is already in use at the specified time range')
         ]);
-	$rules->add(new IsExclusive(), '_isExclusive', [
+
+        $rules->add(new IsExclusive(), '_isExclusive', [
             'errorField' => 'activity',
             'message' =>  __('An exclusive activity will occur at the selected time range')
         ]);
