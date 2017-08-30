@@ -3,7 +3,7 @@ namespace App\Model\Table;
 
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
-use Cake\ORM\Table;
+use App\Model\Table\AppTable;
 use Cake\Validation\Validator;
 
 /**
@@ -20,8 +20,12 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\Sponsorship[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Sponsorship findOrCreate($search, callable $callback = null, $options = [])
  */
-class SponsorshipsTable extends Table
+class SponsorshipsTable extends AppTable
 {
+    public function beforeFind($event, $query, $options, $primary)
+    {
+        return $query;
+    }
 
     /**
      * Initialize method

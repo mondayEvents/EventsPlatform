@@ -1,10 +1,13 @@
 <?php
 namespace App\Model\Table;
 
+use Cake\Core\Configure;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
-use Cake\ORM\Table;
+use App\Model\Table\AppTable;
 use Cake\Validation\Validator;
+use Cake\Utility\Security;
+use Firebase\JWT\JWT;
 
 /**
  * Users Model
@@ -21,7 +24,7 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\User[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\User findOrCreate($search, callable $callback = null, $options = [])
  */
-class UsersTable extends Table
+class UsersTable extends AppTable
 {
 
     /**
@@ -34,7 +37,7 @@ class UsersTable extends Table
     {
         parent::initialize($config);
 
-        $this->addBehavior('Acl.Acl', ['type' => 'requester']);
+//        $this->addBehavior('Acl.Acl', ['type' => 'requester']);
 
         $this->setTable('users');
         $this->setDisplayField('name');
@@ -107,5 +110,32 @@ class UsersTable extends Table
         $rules->add($rules->existsIn(['groups_id'], 'Groups'));
 
         return $rules;
+    }
+
+    /**
+     * @param null $user_id
+     * @param null $group_id
+     * @param null $jti
+     * @return string
+     * @throws \Exception
+     */
+    public function createToken ($user_id = null, $group_id = null, $jti = null)
+    {
+        if (empty($user_id) || empty($group_id) || empty($jti))
+        {
+            throw new \Exception(__('Not enough data for token generation'));
+        }
+
+        $input = JWT::encode(
+                [
+                    'uid' => $user_id,
+                    'gid' => base64_encode(Security::encrypt($group_id, Configure::read('encriptionKey'))),
+                    'jti' => $jti,
+                    'exp' =>  time() + 604800
+                ],
+                Security::salt()
+            );
+
+        return $input;
     }
 }
