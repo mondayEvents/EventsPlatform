@@ -1,22 +1,25 @@
 <?php
 namespace App\Model\Table;
 
+use App\Model\Entity\Event;
+use App\Model\Rule\MatchDateRanges;
+use Cake\I18n\Time;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use App\Model\Table\AppTable;
 use Cake\Validation\Validator;
 use Cake\Database\Schema\TableSchema;
-
 /**
  * Events Model
  *
  * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
  * @property \App\Model\Table\ActivitiesTable|\Cake\ORM\Association\HasMany $Activities
  * @property \App\Model\Table\CouponsTable|\Cake\ORM\Association\HasMany $Coupons
- * @property \App\Model\Table\EventAssociationsTable|\Cake\ORM\Association\HasMany $EventAssociations
+ * @property \App\Model\Table\AdditionalEventsTable|\Cake\ORM\Association\HasMany $AdditionalEvents
  * @property \App\Model\Table\EventManagersTable|\Cake\ORM\Association\HasMany $EventManagers
  * @property \App\Model\Table\RegistrationsTable|\Cake\ORM\Association\HasMany $Registrations
  * @property \App\Model\Table\SponsorshipsTable|\Cake\ORM\Association\HasMany $Sponsorships
+ * @property \App\Model\Table\AssociationRequestsTable|\Cake\ORM\Association\HasMany $AssociationRequests
  *
  * @method \App\Model\Entity\Event get($primaryKey, $options = [])
  * @method \App\Model\Entity\Event newEntity($data = null, array $options = [])
@@ -41,7 +44,7 @@ class EventsTable extends AppTable
     }
 
     /**
-     * Initialize method
+     * Initialize ORM configs
      *
      * @param array $config The configuration for the Table.
      * @return void
@@ -106,7 +109,6 @@ class EventsTable extends AppTable
             ->allowEmpty('id', 'create');
 
         $validator
-            ->requirePresence('name', 'create')
             ->notEmpty('name');
 
         $validator
@@ -126,15 +128,31 @@ class EventsTable extends AppTable
             ]);
 
         $validator
-            ->allowEmpty('tags');
+            ->notEmpty('pay_by_activity')
+            ->add('pay_by_activity', 'boolean', [
+                'rule' => 'boolean'
+            ]);
 
         $validator
-            ->requirePresence('type', 'create')
             ->notEmpty('type');
 
         return $validator;
     }
 
+    /**
+     * Checks the start_at/end_at integrity
+     *
+     * @param string $end_at
+     * @param array $request
+     * @return bool
+     */
+    public function biggerThanStart ($end_at, $request)
+    {
+        if ($end_at <= $request['data']['date_start']) {
+            return false;
+        }
+        return true;
+    }
 
     /**
      * Checks the given date is not in past
@@ -168,21 +186,6 @@ class EventsTable extends AppTable
         }
         return $isOwner;
     }
-    
-    /**
-     * Checks the start_at/end_at integrity
-     *
-     * @param string $end_at
-     * @param array $request
-     * @return bool
-     */
-    public function biggerThanStart ($end_at, $request)
-    {
-        if ($end_at <= $request['data']['date_start']) {
-            return false;
-        }
-        return true;
-    }
 
     /**
      * Returns a rules checker object that will be used for validating
@@ -194,8 +197,7 @@ class EventsTable extends AppTable
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
-		
-		$rules->add(new MatchDateRanges(), '_matchDateRanges', [
+        $rules->add(new MatchDateRanges(), '_matchDateRanges', [
             'errorField' => 'teste',
             'message' =>  __('This place is already in use at the specified time range')
         ]);
