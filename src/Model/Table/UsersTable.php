@@ -37,7 +37,7 @@ class UsersTable extends AppTable
     {
         parent::initialize($config);
 
-        $this->addBehavior('Acl.Acl', ['type' => 'requester']);
+//        $this->addBehavior('Acl.Acl', ['type' => 'requester']);
 
         $this->setTable('users');
         $this->setDisplayField('name');
@@ -125,7 +125,7 @@ class UsersTable extends AppTable
         {
             throw new \Exception(__('Not enough data for token generation'));
         }
- 
+
         $input = JWT::encode(
                 [
                     'uid' => $user_id,
@@ -135,7 +135,7 @@ class UsersTable extends AppTable
                 ],
                 Security::salt()
             );
- 
+      
         return $input;
     }
 }

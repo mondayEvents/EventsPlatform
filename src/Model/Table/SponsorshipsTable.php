@@ -22,6 +22,10 @@ use Cake\Validation\Validator;
  */
 class SponsorshipsTable extends AppTable
 {
+    public function beforeFind($event, $query, $options, $primary)
+    {
+        return $query;
+    }
 
     /**
      * Initialize method
