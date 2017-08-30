@@ -21,6 +21,14 @@ use App\Database\Enum\EventTypeEnum as EventType;
  */
 class EventsController extends AppController
 {
+
+    /**
+     * @Assisted
+     */
+    public function setHttpClient(HttpClientInterface $db)
+    {
+        $this->db = $db;
+    }
     /**
      * Index method
      *
