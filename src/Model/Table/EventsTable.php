@@ -2,13 +2,17 @@
 namespace App\Model\Table;
 
 use App\Model\Entity\Event;
-use App\Model\Rule\MatchDateRanges;
 use Cake\I18n\Time;
+use Cake\Network\Exception\NotFoundException;
+use Cake\ORM\Exception\PersistenceFailedException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use App\Model\Table\AppTable;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use Cake\Database\Schema\TableSchema;
+use Symfony\Component\Console\Exception\LogicException;
+
 /**
  * Events Model
  *
@@ -17,6 +21,7 @@ use Cake\Database\Schema\TableSchema;
  * @property \App\Model\Table\CouponsTable|\Cake\ORM\Association\HasMany $Coupons
  * @property \App\Model\Table\AdditionalEventsTable|\Cake\ORM\Association\HasMany $AdditionalEvents
  * @property \App\Model\Table\EventManagersTable|\Cake\ORM\Association\HasMany $EventManagers
+ * @property \App\Model\Table\EventManagersTable|\Cake\ORM\Association\HasMany $EventPlaces
  * @property \App\Model\Table\RegistrationsTable|\Cake\ORM\Association\HasMany $Registrations
  * @property \App\Model\Table\SponsorshipsTable|\Cake\ORM\Association\HasMany $Sponsorships
  * @property \App\Model\Table\AssociationRequestsTable|\Cake\ORM\Association\HasMany $AssociationRequests
