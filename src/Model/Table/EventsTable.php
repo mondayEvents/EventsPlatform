@@ -88,38 +88,55 @@ class EventsTable extends AppTable
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
+    
+     public function validationDefault(Validator $validator)
     {
         $validator
             ->uuid('id')
             ->allowEmpty('id', 'create');
 
         $validator
+            ->requirePresence('name')
             ->notEmpty('name');
 
         $validator
+            ->requirePresence('date_start')
             ->dateTime('date_start')
             ->notEmpty('date_start')
             ->add('date_start', '_notPast', [
-                'rule' => [$this, 'notPast'],
+                'rule' => function ($date, $context) {
+                    $is_past = Time::createFromFormat('Y-m-d H:i:s', $date, 'UTC')->isPast();
+                    if ($is_past) {
+                        return false;
+                    }
+                    return true;
+                },
                 'message' => 'The Activity start must be in the future'
             ]);
 
         $validator
+            ->requirePresence('date_end')
             ->dateTime('date_end')
             ->notEmpty('date_end')
             ->add('end_at', '_biggerThanStart', [
-                'rule' => [$this, 'biggerThanStart'],
+                'rule' => function ($end_at, $request) {
+                    if ($end_at <= $request['data']['date_start']) {
+                        return false;
+                    }
+                    return true;
+                },
                 'message' => 'The Activity end must be bigger than its start'
             ]);
 
         $validator
+            ->requirePresence('pay_by_activity')
             ->notEmpty('pay_by_activity')
             ->add('pay_by_activity', 'boolean', [
                 'rule' => 'boolean'
             ]);
 
         $validator
+            ->requirePresence('pay_by_activity')
             ->notEmpty('type');
 
         return $validator;
