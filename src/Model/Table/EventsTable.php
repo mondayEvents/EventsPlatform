@@ -2,13 +2,17 @@
 namespace App\Model\Table;
 
 use App\Model\Entity\Event;
-use App\Model\Rule\MatchDateRanges;
 use Cake\I18n\Time;
+use Cake\Network\Exception\NotFoundException;
+use Cake\ORM\Exception\PersistenceFailedException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use App\Model\Table\AppTable;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use Cake\Database\Schema\TableSchema;
+use Symfony\Component\Console\Exception\LogicException;
+
 /**
  * Events Model
  *
@@ -17,6 +21,7 @@ use Cake\Database\Schema\TableSchema;
  * @property \App\Model\Table\CouponsTable|\Cake\ORM\Association\HasMany $Coupons
  * @property \App\Model\Table\AdditionalEventsTable|\Cake\ORM\Association\HasMany $AdditionalEvents
  * @property \App\Model\Table\EventManagersTable|\Cake\ORM\Association\HasMany $EventManagers
+ * @property \App\Model\Table\EventManagersTable|\Cake\ORM\Association\HasMany $EventPlaces
  * @property \App\Model\Table\RegistrationsTable|\Cake\ORM\Association\HasMany $Registrations
  * @property \App\Model\Table\SponsorshipsTable|\Cake\ORM\Association\HasMany $Sponsorships
  * @property \App\Model\Table\AssociationRequestsTable|\Cake\ORM\Association\HasMany $AssociationRequests
@@ -40,9 +45,9 @@ class EventsTable extends AppTable
     protected function _initializeSchema(TableSchema $schema)
     {
         $schema->columnType('type', 'EventType');
+        $schema->columnType('status', 'EventStatusType');
         return $schema;
     }
-
     /**
      * Initialize ORM configs
      *
@@ -60,39 +65,25 @@ class EventsTable extends AppTable
         $this->belongsTo('Users', [
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('ParentEvents', [
-            'className' => 'Events',
-            'foreignKey' => 'parent_id'
-        ]);
+        $this->belongsToMany('Tags');
 
-        $this->hasMany('SubEvents', [
+        $this->hasMany('Activities');
+        $this->hasMany('Coupons');
+        $this->hasMany('EventManagers');
+        $this->hasMany('AssociationRequests');
+        $this->hasMany('EventPlaces');
+        $this->hasMany('Registrations');
+        $this->hasMany('Sponsorships');
+
+        $this->belongsToMany('SubEvents', [
             'className' => 'Events',
-            'foreignKey' => 'parent_id'
-        ]);
-        $this->hasMany('Activities', [
-            'foreignKey' => 'event_id'
-        ]);
-        $this->hasMany('Coupons', [
-            'foreignKey' => 'event_id'
-        ]);
-        $this->hasMany('EventManagers', [
-            'foreignKey' => 'event_id'
-        ]);
-        $this->hasMany('Childrens', [
-            'foreignKey' => 'parent_id'
-        ]);
-        $this->hasMany('AssociationRequests', [
+            'joinTable'=>'event_subevents',
             'foreignKey' => 'event_id',
-            'bindingKey' => 'asked_event_id'
+            'targetForeignKey' => 'subevent_id'
         ]);
-        $this->hasMany('EventPlaces', [
-            'foreignKey' => 'event_id'
-        ]);
-        $this->hasMany('Registrations', [
-            'foreignKey' => 'event_id'
-        ]);
-        $this->hasMany('Sponsorships', [
-            'foreignKey' => 'event_id'
+        $this->hasMany('AssociationRequestParents', [
+            'className' => 'AssociationRequests',
+            'foreignKey' => 'event_parent_id'
         ]);
     }
 
@@ -102,90 +93,60 @@ class EventsTable extends AppTable
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
+
+     public function validationDefault(Validator $validator)
     {
         $validator
             ->uuid('id')
             ->allowEmpty('id', 'create');
 
         $validator
+            ->requirePresence('name')
             ->notEmpty('name');
 
         $validator
+            ->requirePresence('date_start')
             ->dateTime('date_start')
             ->notEmpty('date_start')
             ->add('date_start', '_notPast', [
-                'rule' => [$this, 'notPast'],
+                'rule' => function ($date, $context) {
+                    $is_past = Time::createFromFormat('Y-m-d H:i:s', $date, 'UTC')->isPast();
+                    if ($is_past) {
+                        return false;
+                    }
+                    return true;
+                },
                 'message' => 'The Activity start must be in the future'
             ]);
 
         $validator
+            ->requirePresence('date_end')
             ->dateTime('date_end')
             ->notEmpty('date_end')
             ->add('end_at', '_biggerThanStart', [
-                'rule' => [$this, 'biggerThanStart'],
+                'rule' => function ($end_at, $request) {
+                    if ($end_at <= $request['data']['date_start']) {
+                        return false;
+                    }
+                    return true;
+                },
                 'message' => 'The Activity end must be bigger than its start'
             ]);
 
         $validator
+            ->requirePresence('pay_by_activity')
             ->notEmpty('pay_by_activity')
             ->add('pay_by_activity', 'boolean', [
                 'rule' => 'boolean'
             ]);
 
         $validator
+            ->requirePresence('pay_by_activity')
             ->notEmpty('type');
 
         return $validator;
     }
 
-    /**
-     * Checks the start_at/end_at integrity
-     *
-     * @param string $end_at
-     * @param array $request
-     * @return bool
-     */
-    public function biggerThanStart ($end_at, $request)
-    {
-        if ($end_at <= $request['data']['date_start']) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Checks the given date is not in past
-     *
-     * @param string $date Date in UTC
-     * @param array $context Current request data
-     * @return bool Returns true if date is future. If not, returns false.
-     */
-    public function notPast ($date, $context)
-    {
-        $is_past = Time::createFromFormat('Y-m-d H:i:s', $date, 'UTC')->isPast();
-        if ($is_past) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Checks if current users is ownser of a set of Event entities.
-     *
-     * @param Event[] $events
-     * @return bool If user owns ALL events, returns true. If not, returns false.
-     */
-    public function ownershipChecker (array $events): bool
-    {
-        $isOwner = true;
-        foreach ($events as $event) {
-            if (!$event->isOwner) {
-                $isOwner = false;
-            }
-        }
-        return $isOwner;
-    }
 
     /**
      * Returns a rules checker object that will be used for validating
@@ -197,11 +158,36 @@ class EventsTable extends AppTable
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
-        $rules->add(new MatchDateRanges(), '_matchDateRanges', [
-            'errorField' => 'teste',
-            'message' =>  __('This place is already in use at the specified time range')
-        ]);
-
         return $rules;
     }
+
+    /**
+     * Returns all children from given event
+     * @param string $event_id
+     * @return \Cake\Datasource\ResultSetInterface|null
+     */
+    public function getEventChildren (string $event_id)
+    {
+        return $this->Subevents->find()->where(['Subevents.event_id' => $event_id])->all();
+    }
+
+    public function viewDetails($event_id)
+    {
+        $activity_associations = [
+            'Speakers',
+            'EventPlaces',
+            'Tracks'
+        ];
+
+        return $this->get($event_id, ['contain' => [
+                'Users',
+                'Coupons',
+                'SubEvents' => ['Activities' => $activity_associations],
+                'Registrations',
+                'Sponsorships',
+                'Activities' => $activity_associations
+            ]
+        ]);
+    }
+    
 }
