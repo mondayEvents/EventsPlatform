@@ -87,6 +87,7 @@ class EventsController extends AppController
         $this->buildResponse();
     }
 
+
     /**
      * Add method
      *
@@ -96,8 +97,28 @@ class EventsController extends AppController
     {
         $this->request->allowMethod(['post']);
 
-    }
+        try {
+            $event = $this->Events->newEntity($this->request->getData());
+            $event->user = $this->Events->Users->get($this->Auth->user('uid'));
+            $event->tags = $this->Events->Tags->find()
+                ->where(['Tags.id IN' => (array) $this->request->getData('tags')])
+                ->select(['id','name'])
+                ->toList();
 
+            $event = $this->Events->saveOrFail($event);
+            $this->setResponseMessage(compact('event'));
+
+        } catch (PersistenceFailedException $exception) {
+            $this->setResponseCode(406);
+            $this->setResponseMessage(['error' => $exception->getEntity()->getErrors()]);
+
+        } catch (\Exception $exception) {
+            $this->setResponseCode(500);
+            $this->setResponseMessage(['message' => ['_error' => $exception->getMessage()]]);
+        }
+
+        $this->buildResponse();
+    }
     /**
      * List all events types for
      * selecting porpuses
