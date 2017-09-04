@@ -40,9 +40,9 @@ class EventsTable extends AppTable
     protected function _initializeSchema(TableSchema $schema)
     {
         $schema->columnType('type', 'EventType');
+        $schema->columnType('status', 'EventStatusType');
         return $schema;
     }
-
     /**
      * Initialize ORM configs
      *
@@ -60,39 +60,25 @@ class EventsTable extends AppTable
         $this->belongsTo('Users', [
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('ParentEvents', [
-            'className' => 'Events',
-            'foreignKey' => 'parent_id'
-        ]);
+        $this->belongsToMany('Tags');
 
-        $this->hasMany('SubEvents', [
+        $this->hasMany('Activities');
+        $this->hasMany('Coupons');
+        $this->hasMany('EventManagers');
+        $this->hasMany('AssociationRequests');
+        $this->hasMany('EventPlaces');
+        $this->hasMany('Registrations');
+        $this->hasMany('Sponsorships');
+
+        $this->belongsToMany('SubEvents', [
             'className' => 'Events',
-            'foreignKey' => 'parent_id'
-        ]);
-        $this->hasMany('Activities', [
-            'foreignKey' => 'event_id'
-        ]);
-        $this->hasMany('Coupons', [
-            'foreignKey' => 'event_id'
-        ]);
-        $this->hasMany('EventManagers', [
-            'foreignKey' => 'event_id'
-        ]);
-        $this->hasMany('Childrens', [
-            'foreignKey' => 'parent_id'
-        ]);
-        $this->hasMany('AssociationRequests', [
+            'joinTable'=>'event_subevents',
             'foreignKey' => 'event_id',
-            'bindingKey' => 'asked_event_id'
+            'targetForeignKey' => 'subevent_id'
         ]);
-        $this->hasMany('EventPlaces', [
-            'foreignKey' => 'event_id'
-        ]);
-        $this->hasMany('Registrations', [
-            'foreignKey' => 'event_id'
-        ]);
-        $this->hasMany('Sponsorships', [
-            'foreignKey' => 'event_id'
+        $this->hasMany('AssociationRequestParents', [
+            'className' => 'AssociationRequests',
+            'foreignKey' => 'event_parent_id'
         ]);
     }
 
