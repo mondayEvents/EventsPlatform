@@ -88,7 +88,7 @@ class EventsTable extends AppTable
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    
+
      public function validationDefault(Validator $validator)
     {
         $validator
@@ -142,53 +142,6 @@ class EventsTable extends AppTable
         return $validator;
     }
 
-    /**
-     * Checks the start_at/end_at integrity
-     *
-     * @param string $end_at
-     * @param array $request
-     * @return bool
-     */
-    public function biggerThanStart ($end_at, $request)
-    {
-        if ($end_at <= $request['data']['date_start']) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Checks the given date is not in past
-     *
-     * @param string $date Date in UTC
-     * @param array $context Current request data
-     * @return bool Returns true if date is future. If not, returns false.
-     */
-    public function notPast ($date, $context)
-    {
-        $is_past = Time::createFromFormat('Y-m-d H:i:s', $date, 'UTC')->isPast();
-        if ($is_past) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Checks if current users is ownser of a set of Event entities.
-     *
-     * @param Event[] $events
-     * @return bool If user owns ALL events, returns true. If not, returns false.
-     */
-    public function ownershipChecker (array $events): bool
-    {
-        $isOwner = true;
-        foreach ($events as $event) {
-            if (!$event->isOwner) {
-                $isOwner = false;
-            }
-        }
-        return $isOwner;
-    }
 
     /**
      * Returns a rules checker object that will be used for validating
@@ -200,11 +153,36 @@ class EventsTable extends AppTable
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
-        $rules->add(new MatchDateRanges(), '_matchDateRanges', [
-            'errorField' => 'teste',
-            'message' =>  __('This place is already in use at the specified time range')
-        ]);
-
         return $rules;
     }
+
+    /**
+     * Returns all children from given event
+     * @param string $event_id
+     * @return \Cake\Datasource\ResultSetInterface|null
+     */
+    public function getEventChildren (string $event_id)
+    {
+        return $this->Subevents->find()->where(['Subevents.event_id' => $event_id])->all();
+    }
+
+    public function viewDetails($event_id)
+    {
+        $activity_associations = [
+            'Speakers',
+            'EventPlaces',
+            'Tracks'
+        ];
+
+        return $this->get($event_id, ['contain' => [
+                'Users',
+                'Coupons',
+                'SubEvents' => ['Activities' => $activity_associations],
+                'Registrations',
+                'Sponsorships',
+                'Activities' => $activity_associations
+            ]
+        ]);
+    }
+    
 }
