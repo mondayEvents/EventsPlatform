@@ -119,6 +119,7 @@ class EventsController extends AppController
 
         $this->buildResponse();
     }
+    
     /**
      * List all events types for
      * selecting porpuses
@@ -130,6 +131,7 @@ class EventsController extends AppController
         $this->request->allowMethod(['get']);
 
         $types = EventType::getConstants(true);
-        $this->response(200, compact('types'));
+        $this->setResponseMessage(compact('types'));
+        $this->buildResponse();
     }
 }
