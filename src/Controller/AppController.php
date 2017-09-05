@@ -31,23 +31,31 @@ abstract class AppController extends Controller
 {
 
     /**
-     * Initialization hook method.
-     * Use this method to add common initialization code like loading components.
-     *
-     * @return void
+     * @var string $response_code
      */
+     private $response_code;
+     
+         /**
+          * @var array $response_message
+          */
+         private $response_message;
+     
+         /**
+          * Initialization hook method.
+          * Use this method to add common initialization code like loading components.
+          *
+          * @return void
+          */
     public function initialize()
     {
         parent::initialize();
 
+        $this->setResponseCode(200);
+        $this->setResponseMessage([]);
+
         $this->loadComponent('Acl.Acl');
         $this->loadComponent('RequestHandler');
-//        $this->loadComponent('Flash');
-//        $this->loadComponent('Security');
 
-        /*
-         * Auth Component with JSON Web Token service
-         */
         $this->loadComponent('Auth',
             [
                 'storage' => 'Memory',
@@ -75,33 +83,52 @@ abstract class AppController extends Controller
         );
     }
 
+   
     /**
-     * Before render callback.
-     *
-     * @param \Cake\Event\Event $event The beforeRender event.
-     * @return \Cake\Network\Response|null|void
+     * @return string
      */
-    public function beforeRender(Event $event)
-    {
-        if (!array_key_exists('_serialize', $this->viewVars) &&
-            in_array($this->response->type(), ['application/json', 'application/xml'])
-        ) {
-            $this->set('_serialize', true);
-        }
-    }
-
-    /**
-     * @param int $code
-     * @param array $vars
-     * @return void
-     */
-    public function response(int $code, array $vars)
-    {
-        $serialize = array_keys($vars);
-        extract($vars);
-
-        $this->response->statusCode($code);
-        $this->set(compact($serialize));
-        $this->set('_serialize', $serialize);
-    }
+     public function getResponseCode(): string
+     {
+         return $this->response_code;
+     }
+ 
+     /**
+      * @param string $responseCode
+      */
+     public function setResponseCode(string $responseCode)
+     {
+         $this->response_code = $responseCode;
+     }
+ 
+     /**
+      * @return array
+      */
+     public function getResponseMessage(): array
+     {
+         return $this->response_message;
+     }
+ 
+     /**
+      * @param array $message
+      */
+     public function setResponseMessage(array $message)
+     {
+         $this->response_message = $message;
+     }
+ 
+     /**
+      * Wrapper method for serializing responses
+      *
+      * @return void
+      */
+     public function buildResponse()
+     {
+         $this->response->statusCode($this->getResponseCode());
+ 
+         $serialize = array_keys($this->getResponseMessage());
+         extract($this->getResponseMessage());
+ 
+         $this->set(compact($serialize));
+         $this->set('_serialize', $serialize);
+     }
 }
