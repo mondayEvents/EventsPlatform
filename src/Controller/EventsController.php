@@ -23,7 +23,7 @@ use App\Database\Enum\EventStatusEnum as EventStatus;
  */
 class EventsController extends AppController
 {
- /**
+    /**
      *
      */
     public function initialize()
@@ -53,7 +53,7 @@ class EventsController extends AppController
         $this->buildResponse();
     }
 
-  /**
+    /**
      * View method
      *
      * @param string|null $event_id Event id.
@@ -87,7 +87,6 @@ class EventsController extends AppController
         $this->buildResponse();
     }
 
-
     /**
      * Add method
      *
@@ -119,7 +118,7 @@ class EventsController extends AppController
 
         $this->buildResponse();
     }
-    
+
     /**
      * List all events types for
      * selecting porpuses
@@ -132,6 +131,44 @@ class EventsController extends AppController
 
         $types = EventType::getConstants(true);
         $this->setResponseMessage(compact('types'));
+        $this->buildResponse();
+    }
+
+    /**
+     * List event's detail schedule
+     *
+     * @return \Cake\Http\Response|void|null Renders JSON response.
+     */
+    public function schedule ($event_id = null)
+    {
+        $this->request->allowMethod(['get']);
+
+        $activity_associations = [
+            'Speakers',
+            'EventPlaces' => function ($q) {
+                return $q->formatResults(function($results) {
+                    return $results->map(function($container) {
+                        $container['children'] = $this->Events->EventPlaces
+                            ->findById($container->id)
+                            ->find('threaded')
+                            ->toArray();
+                        return $container;
+                    });
+                });
+            },
+            'Tracks'
+        ];
+
+        $schedule = $this->Events->get($event_id, ['contain' => [
+            'Coupons',
+            'Users',
+            'SubEvents' => ['Activities' => $activity_associations],
+            'Companies',
+            'Activities' => $activity_associations,
+        ]
+        ]);
+
+        $this->setResponseMessage(compact('schedule'));
         $this->buildResponse();
     }
 }

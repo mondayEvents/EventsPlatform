@@ -35,7 +35,7 @@ class RegistrationItemsTable extends AppTable
 
         $this->setTable('registration_items');
         $this->setDisplayField('registration_id');
-        $this->setPrimaryKey(['registration_id', 'activity_id']);
+        $this->setPrimaryKey(['id']);
 
         $this->belongsTo('Registrations', [
             'foreignKey' => 'registration_id',
@@ -71,9 +71,24 @@ class RegistrationItemsTable extends AppTable
      */
     public function buildRules(RulesChecker $rules)
     {
+        $rules->add($rules->isUnique(['registration_id','activity_id'],
+            __('You cannot be registered to the same activity twice in one registration!')));
         $rules->add($rules->existsIn(['registration_id'], 'Registrations'));
         $rules->add($rules->existsIn(['activity_id'], 'Activities'));
 
         return $rules;
+    }
+
+    public function setEntities ($activities) {
+        $entities = [];
+
+        foreach ($activities as $activity) {
+            $entity = $this->newEntity();
+            $entity->activity = $activity;
+            $entity->price = $activity->price;
+            $entities[] = $entity;
+        }
+
+        return $entities;
     }
 }

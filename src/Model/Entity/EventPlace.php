@@ -8,12 +8,12 @@ use Cake\ORM\Entity;
  *
  * @property string $id
  * @property string $event_id
+ * @property string $parent_id
  * @property string $name
- * @property string $ltd
- * @property string $lat
- * @property string $lng
  *
  * @property \App\Model\Entity\Event $event
+ * @property \App\Model\Entity\Event $parent
+ * @property \App\Model\Entity\User $user
  */
 class EventPlace extends Entity
 {
@@ -32,4 +32,11 @@ class EventPlace extends Entity
         'id' => false,
         'event_id' => false
     ];
+
+    /**
+     * Fields that are excluded from JSON versions of the entity.
+     *
+     * @var array
+     */
+    protected $_hidden = [];
 }

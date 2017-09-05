@@ -48,6 +48,7 @@ class EventsTable extends AppTable
         $schema->columnType('status', 'EventStatusType');
         return $schema;
     }
+
     /**
      * Initialize ORM configs
      *
@@ -73,7 +74,7 @@ class EventsTable extends AppTable
         $this->hasMany('AssociationRequests');
         $this->hasMany('EventPlaces');
         $this->hasMany('Registrations');
-        $this->hasMany('Sponsorships');
+        $this->hasMany('Companies');
 
         $this->belongsToMany('SubEvents', [
             'className' => 'Events',
@@ -85,6 +86,7 @@ class EventsTable extends AppTable
             'className' => 'AssociationRequests',
             'foreignKey' => 'event_parent_id'
         ]);
+        $this->hasMany('Tracks');
     }
 
     /**
@@ -93,8 +95,7 @@ class EventsTable extends AppTable
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-
-     public function validationDefault(Validator $validator)
+    public function validationDefault(Validator $validator)
     {
         $validator
             ->uuid('id')
@@ -147,7 +148,6 @@ class EventsTable extends AppTable
         return $validator;
     }
 
-
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.
@@ -184,10 +184,9 @@ class EventsTable extends AppTable
                 'Coupons',
                 'SubEvents' => ['Activities' => $activity_associations],
                 'Registrations',
-                'Sponsorships',
+                'Companies',
                 'Activities' => $activity_associations
             ]
         ]);
     }
-    
 }
