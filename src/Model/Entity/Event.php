@@ -196,8 +196,29 @@ class Event extends Entity
         return $exist_activities;
     }
 
-    public function isPublished ()
+
+    public function getAllActivitiesAvailable ()
     {
-        return (bool) $this->published;
+        $subactivities = function () {
+            $activities = [];
+            foreach ($this->sub_events as $event) {
+                foreach ($event->activities as $activity) {
+                    $activities[] = $activity;
+                }
+            }
+            return $activities;
+        };
+        return Hash::merge($subactivities(), $this->activities);
     }
+
+    public function addEventPlace (EventPlace $place, User $user)
+    {
+        if (!$this->isOwnedBy($user)) {
+            throw new UnauthorizedException(__('You are not allowed to perform this action'));
+        }
+
+        $this->event_places[] = $place;
+        $this->setDirty('event_places', true);
+    }
+    
 }
