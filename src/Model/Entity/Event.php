@@ -111,7 +111,7 @@ class Event extends Entity
         $this->parent_id = $parent->id;
     }
 
-        /**
+    /**
      * @param EventManager $manager
      */
      public function setManager(EventManager $manager)
@@ -124,7 +124,7 @@ class Event extends Entity
          $this->setDirty('event_managers', true);
      }
 
-         /**
+    /**
      * @return int
      */
     public function hasSubEvents ()
@@ -132,6 +132,33 @@ class Event extends Entity
         return count($this->sub_events);
     }
 
+
+    /**
+     * Makes sure the event is accepting new registers
+     *
+     * @throws Exception When event is in progress, closed or unpublished
+     */
+     public function opennessChecker ()
+     {
+         if (($this->status !== Status::getNameByValue(Status::NEW)) &&
+             ($this->status !== Status::getNameByValue(Status::OPEN))
+         ) {
+             throw new Exception('The Event is not open to new registers');
+         }
+     }
+ 
+     public function getAutoCoupons ()
+     {
+ 
+         $coupons = [];
+         foreach ($this->coupons as $coupon) {
+             if ($coupon->automatic) {
+                 $coupons[] = $coupon;
+             }
+         }
+         return $coupons;
+     }
+ 
 
     public function isPublished ()
     {
