@@ -3,10 +3,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\{
-    I18n\Time,
-    Network\Exception\UnauthorizedException,
-    Network\Exception\BadRequestException,
-    Utility\Text
+    I18n\Time, Network\Exception\UnauthorizedException, Network\Exception\BadRequestException, ORM\Exception\PersistenceFailedException, Utility\Text
 };
 
 /**
@@ -30,22 +27,6 @@ class UsersController extends AppController
     }
 
     /**
-     * List and paginate all users
-     *
-     * @return \Cake\Http\Response|void
-     */
-    public function index()
-    {
-        $this->paginate = [
-            'contain' => ['Groups']
-        ];
-        $users = $this->paginate($this->Users);
-
-        $this->set(compact('users'));
-        $this->set('_serialize', ['users']);
-    }
-
-    /**
      * Retrieve a valid token, if the request body is valid
      *
      * @return \Cake\Http\Response|void|null Renders JSON response.
@@ -60,29 +41,14 @@ class UsersController extends AppController
             throw new UnauthorizedException('Invalid username or password');
         }
 
-        $this->set(['JWT' => $this->Users->createToken($user['id'], $user['group_id'], $user['jti'])]);
-        unset($user['group_id'], $user['jti']);
+        $user = $this->Users->get($user['id'], ['contain' => ['Groups']]);
 
-        $this->set(['user' => $user,
-            '_serialize' => ['JWT', 'user']
-        ]);
-    }
+        $message = ['JWT' => $user->getToken()];
+        unset($user->group, $user->jti);
+        $message['user'] = $user;
 
-    /**
-     * View method
-     *
-     * @param string|null $id User id.
-     * @return \Cake\Http\Response|void|null Renders JSON response.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When user not found.
-     */
-    public function view($id = null)
-    {
-        $user = $this->Users->get($id, [
-            'contain' => ['Groups', 'Events', 'Registrations']
-        ]);
-
-        $this->set('user', $user);
-        $this->set('_serialize', ['user']);
+        $this->setResponseMessage($message);
+        $this->buildResponse();
     }
 
     /**
@@ -95,27 +61,37 @@ class UsersController extends AppController
     {
         $this->request->allowMethod(['post']);
 
-        if ($this->Auth->identify())
-        {
-            throw new BadRequestException(__("You are already registered or logged in!"));
+        try {
+            $this->Users->cantBeLogged($this->Auth->user());
+
+            $user = $this->Users->newEntity($this->request->getData(), ['associated' => ['Tags']]);
+            $user->group = $this->Users->Groups->findByName('Regular')->first();
+            $user->jti = Text::uuid();
+            $tags = $this->request->getData('tags');
+
+            if (!empty($tags)) {
+                $user->tags[] = $this->Users->Tags->find()
+                    ->where(['Tags.id IN' => $tags])
+                    ->select(['id','name'])
+                    ->toList();
+            }
+
+            $user = $this->Users->saveOrFail($user);
+            $this->setResponseMessage([
+                'JWT' => $user->getToken(),
+                'user' => $user
+            ]);
+
+        } catch (PersistenceFailedException $exception) {
+            $this->setResponseCode(406);
+            $this->setResponseMessage(['error' => $exception->getEntity()->getErrors()]);
+
+        } catch (\Exception $exception) {
+            $this->setResponseCode(500);
+            $this->setResponseMessage(['message' => ['_error' => $exception->getMessage()]]);
         }
 
-        $user = $this->Users->newEntity();
-        $user = $this->Users->patchEntity($user, $this->request->getData());
-        $user->groups_id = 2;
-        $user->jti = Text::uuid();
-
-        if (!$this->Users->save($user)) {
-            $error = $user->getErrors();
-            $this->response(400, compact('error'));
-            return;
-        }
-
-        $JWT = $this->Users->createToken($user->id, $user->groups_id, $user->jti);
-
-        $this->set(compact('JWT'));
-        $this->set('_serialize', ['JWT']);
-
+        $this->buildResponse();
     }
 
     /**
@@ -128,20 +104,30 @@ class UsersController extends AppController
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
 
-        $user = $this->Users->get($this->Auth->user('uid'), [
-            'contain' => ['Groups']
-        ]);
+        try {
+            $user = $this->Users->get($this->Auth->user('uid'), ['contain' => ['Tags']]);
+            $tags = $this->request->getData('tags');
 
-//        dd($user);
+            if (!empty($tags)) {
+                $user->tags[] = $this->Users->Tags->find()
+                    ->where(['Tags.id IN' => $tags])
+                    ->select(['id','name'])
+                    ->toList();
+            }
 
-        $user = $this->Users->patchEntity($user, $this->request->getData());
+            $this->Users->saveOrFail($this->Users->patchEntity($user, $this->request->getData()));
 
-        if (!$this->Users->save($user)) {
-            $error = $user->getErrors();
-            $this->response(400, compact('error'));
-            return;
+            $this->setResponseMessage(['message' => ['_success' => 'Your profile was updated!']]);
+
+        } catch (PersistenceFailedException $exception) {
+            $this->setResponseCode(406);
+            $this->setResponseMessage(['error' => $exception->getEntity()->getErrors()]);
+
+        } catch (\Exception $exception) {
+            $this->setResponseCode(500);
+            $this->setResponseMessage(['message' => ['_error' => $exception->getMessage()]]);
         }
 
+        $this->buildResponse();
     }
-
 }
