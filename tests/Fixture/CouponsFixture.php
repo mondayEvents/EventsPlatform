@@ -17,11 +17,15 @@ class CouponsFixture extends TestFixture
      */
     // @codingStandardsIgnoreStart
     public $fields = [
-        'id' => ['type' => 'string', 'fixed' => true, 'length' => 26, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null],
+        'id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => '', 'comment' => '', 'precision' => null],
         'event_id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
-        'code' => ['type' => 'string', 'length' => 45, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'code' => ['type' => 'string', 'length' => 45, 'null' => true, 'default' => '', 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'amount' => ['type' => 'float', 'length' => null, 'precision' => null, 'unsigned' => false, 'null' => false, 'default' => '0', 'comment' => ''],
-        'type' => ['type' => 'string', 'length' => null, 'null' => false, 'default' => 'percentage', 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'type' => ['type' => 'integer', 'length' => 3, 'unsigned' => false, 'null' => false, 'default' => '1', 'comment' => '', 'precision' => null, 'autoIncrement' => null],
+        'start_at' => ['type' => 'timestamp', 'length' => null, 'null' => false, 'default' => 'CURRENT_TIMESTAMP', 'comment' => '', 'precision' => null],
+        'end_at' => ['type' => 'timestamp', 'length' => null, 'null' => false, 'default' => '0000-00-00 00:00:00', 'comment' => '', 'precision' => null],
+        'automatic' => ['type' => 'boolean', 'length' => null, 'null' => false, 'default' => '0', 'comment' => '', 'precision' => null],
+        'active' => ['type' => 'boolean', 'length' => null, 'null' => false, 'default' => '1', 'comment' => '', 'precision' => null],
         '_indexes' => [
             'fk_coupons_events1_idx' => ['type' => 'index', 'columns' => ['event_id'], 'length' => []],
         ],
@@ -44,11 +48,15 @@ class CouponsFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => '676ca789-72f0-4f71-99b7-146d66f459df',
-            'event_id' => '4b350d5c-fb88-402d-b1cf-2b1e89e1aa52',
+            'id' => '73ff1a6f-c074-42e5-a44e-5a27f6cb9edd',
+            'event_id' => '3037540b-0ab2-4e49-90b4-b9b3409fccf2',
             'code' => 'Lorem ipsum dolor sit amet',
             'amount' => 1,
-            'type' => 'Lorem ipsum dolor sit amet'
+            'type' => 1,
+            'start_at' => 1504613905,
+            'end_at' => 1504613905,
+            'automatic' => 1,
+            'active' => 1
         ],
     ];
 }
