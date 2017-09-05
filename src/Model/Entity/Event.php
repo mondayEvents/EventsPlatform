@@ -111,7 +111,28 @@ class Event extends Entity
         $this->parent_id = $parent->id;
     }
 
-    
+        /**
+     * @param EventManager $manager
+     */
+     public function setManager(EventManager $manager)
+     {
+         if (is_null($this->event_managers)) {
+             $this->event_managers = [];
+         }
+ 
+         $this->event_managers[] = $manager;
+         $this->setDirty('event_managers', true);
+     }
+
+         /**
+     * @return int
+     */
+    public function hasSubEvents ()
+    {
+        return count($this->sub_events);
+    }
+
+
     public function isPublished ()
     {
         return (bool) $this->published;
