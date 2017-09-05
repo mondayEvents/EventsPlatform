@@ -52,7 +52,7 @@ class ActivitiesController extends AppController
      * @return \Cake\Http\Response|void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-     
+
      public function view($id = null)
      {
          $this->request->allowMethod(['get']);
@@ -88,30 +88,36 @@ class ActivitiesController extends AppController
 
         $this->request->allowMethod(['post']);
 
-        $event = $this->Activities->Events->get($event_id);
-        if (!$event->isOwner($this->Auth->user('uid'))) {
-            $error = ["_notification" => __("Sorry, but you do not own this event")];
-            $this->response(400, compact('error'));
-            return;
+        try {
+            $event = $this->Activities->Events->get($event_id, ['contain' => ['Users']]);
+
+            $user = $this->Activities->Users->get($this->Auth->user('uid'), ['contain' => ['Groups']]);
+            if (!$event->isOwnedBy($user)) {
+                throw new BadRequestException('You dont own this event :(');
+            }
+
+            $activity = $this->Activities->newEntity();
+            $activity = $this->Activities->patchEntity($activity, $this->request->getData());
+            $activity->event = $event;
+            $activity->user = $user;
+            $activity->event_place = $this->Activities->findEventPlace(
+                $this->request->getData('event_place_id'),
+                $event->id
+            );
+
+            $activity = $this->Activities->saveOrFail($activity);
+            $this->setResponseMessage(compact('activity'));
+
+        } catch (PersistenceFailedException $exception) {
+            $this->setResponseCode(406);
+            $this->setResponseMessage(['error' => $exception->getEntity()->getErrors()]);
+
+        } catch (\Exception $exception) {
+            $this->setResponseCode(500);
+            $this->setResponseMessage(['message' => ['_error' => $exception->getMessage()]]);
         }
 
-        $activity = $this->Activities->newEntity();
-        $activity->event_id = $event->id;
-        $activity = $this->Activities->patchEntity($activity, $this->request->getData());
-
-        if (isset($activity->event_place))
-        {
-            $activity->event_place->event_id = $event->id;
-        }
-
-        if (!$this->Activities->save($activity)) {
-            $error = $activity->getErrors();
-            $this->response(400, compact('error'));
-            return;
-        }
-
-        $this->set(compact('activity'));
-        $this->set('_serialize', ['activity']);
+        $this->buildResponse();
     }
 
     public function types ()
