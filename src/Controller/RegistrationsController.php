@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use App\Strategy\Registrations\TotalByEventStrategy;
 
 /**
  * Registrations Controller
@@ -14,86 +15,136 @@ class RegistrationsController extends AppController
 {
 
     /**
-     * Index method
+     * List all registration for event with pagination
      *
+     * @param string $event_id
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function list($event_id = null)
     {
-        $this->paginate = [
-            'contain' => ['Events', 'Users']
-        ];
-        $registrations = $this->paginate($this->Registrations);
+        $this->request->allowMethod(['get']);
 
-        $this->set(compact('registrations'));
-        $this->set('_serialize', ['registrations']);
+        try {
+            $this->paginate = [
+                'contain' => ['Events' => [
+                    'conditions' => [
+                        'Events.user_id' => $this->Auth->user('uid'),
+                        'Events.id' => $event_id
+                    ]
+                ], 'Users']
+            ];
+
+            $registrations = $this->paginate($this->Registrations);
+            $this->setResponseMessage(compact('registrations'));
+
+        } catch (\Exception $exception) {
+            $this->setResponseCode(500);
+            $this->setResponseMessage(['message' => ['_error' => $exception->getMessage()]]);
+        }
+
+        $this->buildResponse();
     }
 
     /**
      * View method
      *
-     * @param string|null $id Registration id.
+     * @param string|null $registration_id Registration id.
      * @return \Cake\Http\Response|void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
+    public function view($registration_id = null)
     {
-        $registration = $this->Registrations->get($id, [
-            'contain' => ['Events', 'Users', 'RegistrationItems']
-        ]);
+        $this->request->allowMethod(['get']);
 
-        $this->set('registration', $registration);
-        $this->set('_serialize', ['registration']);
+        try {
+            $registration = $this->Registrations->get($registration_id, [
+                'contain' => ['Events', 'Users', 'RegistrationItems']
+            ]);
+            $this->setResponseMessage(compact('registration'));
+
+        } catch (\Exception $exception) {
+            $this->setResponseCode(500);
+            $this->setResponseMessage(['message' => ['_error' => $exception->getMessage()]]);
+        }
+
+        $this->buildResponse();
     }
 
     /**
      * Add method
      *
+     * @param string $event_id
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function add ($event_id)  // TODO: testar se funciona com cupon automatico e individual
     {
-        $registration = $this->Registrations->newEntity();
-        if ($this->request->is('post')) {
-            $registration = $this->Registrations->patchEntity($registration, $this->request->getData());
-            if ($this->Registrations->save($registration)) {
-                $this->Flash->success(__('The registration has been saved.'));
+        $this->request->allowMethod(['post']);
 
-                return $this->redirect(['action' => 'index']);
+        try {
+            $event = $this->Registrations->Events->viewDetails($event_id);
+            $registration = $this->Registrations->newEntity();
+            $items = ($event->pay_by_activity) ? $event->matchActivity($this->request->getData('registration_items')) : $event->getAllActivitiesAvailable();
+            $registration->registration_items = $this->Registrations->RegistrationItems->setEntities($items);
+            $user = $this->Registrations->Users->get($this->Auth->user('uid'));
+            $payment = $this->Registrations->RegistrationPayments->newEntity();
+
+            $user_coupons = [];
+            if (!empty($this->request->getData('coupons'))) {
+                $user_coupons = $this->Registrations->Events->Coupons
+                    ->findValidCoupons($event->id, $this->request->getData('coupons'));
             }
-            $this->Flash->error(__('The registration could not be saved. Please, try again.'));
+
+            $registration->newRegistration($event, $items, $payment, $user, $user_coupons);
+
+            $registration = $this->Registrations->Events->saveOrFail($event, [
+                'associated' => [
+                    'Registrations' => [
+                        'RegistrationPayments',
+                        'RegistrationPaymentsCoupons'
+                    ],
+                ]
+            ]);
+
+            $this->setResponseMessage(compact('registration'));
+
+        } catch (\Exception $exception) {
+            $this->setResponseCode(500);
+            $this->setResponseMessage(['message' => ['_error' => $exception->getMessage()]]);
         }
-        $events = $this->Registrations->Events->find('list', ['limit' => 200]);
-        $users = $this->Registrations->Users->find('list', ['limit' => 200]);
-        $this->set(compact('registration', 'events', 'users'));
-        $this->set('_serialize', ['registration']);
+
+        $this->buildResponse();
     }
 
     /**
-     * Edit method
+     * Accept method
      *
-     * @param string|null $id Registration id.
+     * @param string|null $registration_id Registration id.
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function accept($registration_id = null)
     {
-        $registration = $this->Registrations->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $registration = $this->Registrations->patchEntity($registration, $this->request->getData());
-            if ($this->Registrations->save($registration)) {
-                $this->Flash->success(__('The registration has been saved.'));
+        $this->request->allowMethod(['get']);
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The registration could not be saved. Please, try again.'));
+        try {
+            $user = $this->Registrations->Users->get($this->Auth->user('uid'), ['contain' => []]);
+            $registration = $this->Registrations->get($registration_id, [
+                'contain' => ['Events' => ['Users'],'RegistrationPayments']
+            ]);
+
+            $registration->acceptPayment($user);
+            $registration = $this->Registrations->saveOrFail($registration, ['associated' => ['RegistrationPayments']]);
+
+            $this->setResponseMessage(compact('registration'));
+
+        } catch (\Exception $exception) {
+            $this->setResponseCode(500);
+            $this->setResponseMessage(['message' => ['_error' => $exception->getMessage()]]);
         }
-        $events = $this->Registrations->Events->find('list', ['limit' => 200]);
-        $users = $this->Registrations->Users->find('list', ['limit' => 200]);
-        $this->set(compact('registration', 'events', 'users'));
-        $this->set('_serialize', ['registration']);
+
+        $this->buildResponse();
+
+
     }
 
     /**
