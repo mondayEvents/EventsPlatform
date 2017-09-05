@@ -2,6 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Network\Exception\NotFoundException;
+use Cake\ORM\Exception\PersistenceFailedException;
 
 /**
  * AssociationRequests Controller
@@ -20,14 +22,50 @@ class AssociationRequestsController extends AppController
      */
     public function index()
     {
-        $this->paginate = [
-            'contain' => ['Users', 'Events', 'Parent']
-        ];
-        $associationRequests = $this->paginate($this->AssociationRequests);
+        $this->request->allowMethod(['get']);
+        $pendingAssociations = $this->AssociationRequests->getAssociationRequests($this->Auth->user('uid'));
 
-        $this->set(compact('associationRequests'));
-        $this->set('_serialize', ['associationRequests']);
+        $this->setResponseMessage(compact('pendingAssociations'));
+        $this->buildResponse();
     }
+    
+    /*
+    * Accept pending association request
+    *
+    * @param string|null $request_id Association Request id.
+    * @return \Cake\Http\Response|void
+    */
+   public function accept($request_id = null)
+   {
+       $this->request->allowMethod(['get']);
+
+       try {
+
+           $request = $this->AssociationRequests->get($request_id,
+               ['contain' => ['Events' => ['EventManagers'], 'Users']]
+           );
+
+           $manager = $this->AssociationRequests->Events->EventManagers->newEntity();
+           $user = $this->AssociationRequests->Users->get($this->Auth->user('uid'));
+           $manager->user = $user;
+
+           $request->acceptEventAssociation($manager);
+
+           $this->AssociationRequests->saveOrFail($request, [
+               'associated' => ['Events' => ['ParentEvents','EventManagers'], 'Users']
+           ]);
+
+       } catch (PersistenceFailedException $exception) {
+           $this->setResponseCode(406);
+           $this->setResponseMessage(['error' => $exception->getEntity()->getErrors()]);
+
+       } catch (\Exception $exception) {
+           $this->setResponseCode(500);
+           $this->setResponseMessage(['message' => ['_error' => $exception->getMessage()]]);
+       }
+
+       $this->buildResponse();
+   }
 
     /**
      * View method
