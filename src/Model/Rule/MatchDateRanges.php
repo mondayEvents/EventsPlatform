@@ -1,6 +1,6 @@
-﻿<?php
+<?php
 namespace App\Model\Rule;
- 
+
 use Cake\Datasource\EntityInterface;
 use App\Model\Rule\AppRule;
  
