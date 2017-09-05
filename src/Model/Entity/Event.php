@@ -1,7 +1,15 @@
 <?php
 namespace App\Model\Entity;
 
+use App\Database\Enum\EventStatusEnum as Status;
+use App\Model\Strategy\Context\PaymentContext;
+use Cake\Core\Exception\Exception;
+use Cake\Network\Exception\NotFoundException;
+use Cake\Network\Exception\UnauthorizedException;
 use Cake\ORM\Entity;
+use Cake\ORM\Exception\PersistenceFailedException;
+use Cake\Utility\Hash;
+use Symfony\Component\Console\Exception\LogicException;
 
 /**
  * Event Entity
@@ -12,9 +20,8 @@ use Cake\ORM\Entity;
  * @property string $name
  * @property \Cake\I18n\FrozenTime $date_start
  * @property \Cake\I18n\FrozenTime $date_end
- * @property string $tags
  * @property $type
- * @property $published
+ * @property $status
  *
  * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\Activity[] $activities
@@ -23,7 +30,10 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\Registration[] $registrations
  * @property \App\Model\Entity\Sponsorship[] $sponsorships
  * @property \App\Model\Entity\EventManager[] $event_managers
+ * @property \App\Model\Entity\EventPlace[] $event_places
+ * * @property \App\Model\Entity\Tag[] $tags
  */
+
 class Event extends Entity
 {
 
@@ -36,9 +46,11 @@ class Event extends Entity
      *
      * @var array
      */
-    protected $_accessible = [
+     protected $_accessible = [
         '*' => true,
         'parent_id' => false,
+        'tags' => false,
+        'user' => false,
         'id' => false
     ];
 
@@ -47,30 +59,30 @@ class Event extends Entity
      *
      * @var array
      */
-    protected $_hidden = [
+     protected $_hidden = [
         'user_id',
         'parent_id'
     ];
 
-    /**
+        /**
      * Returns if user is owner or not of the event
      *
-     * @param $user
+     * @param User $user
      * @return bool
      */
-    public function isOwner($user): bool
-    {
-        if ($user === $this->user_id) {
-            return true;
-        }
-
-        if (!$this->event_managers) {
-            return false;
-        }
-
-        $user_ids = array_column($this->event_managers,'user_id');
-        return array_search($user, $user_ids, true) !== false;
-    }
+     public function isOwnedBy(User $user): bool
+     {
+         if ($user->id === $this->user->id) {
+             return true;
+         }
+ 
+         if (!$this->event_managers) {
+             return false;
+         }
+ 
+         $user_ids = array_column($this->event_managers,'user_id');
+         return array_search($user->id, $user_ids, true) !== false;
+     }
 
     public function isPublished ()
     {
