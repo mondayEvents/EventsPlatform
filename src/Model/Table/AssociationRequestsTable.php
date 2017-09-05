@@ -1,11 +1,21 @@
 <?php
+
+
 namespace App\Model\Table;
 
+
+use App\Database\Enum\AssociationRequestStatusEnum as Status;
+use App\Listener\AssociationRequestListener;
+use App\Model\Entity\AssociationRequest;
+use Cake\Event\EventListenerInterface;
+use Cake\ORM\Exception\PersistenceFailedException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Cake\Database\Schema\TableSchema;
+use Cake\Event\Event;
+use MongoDB\Driver\Exception\AuthenticationException;
 
 /**
  * AssociationRequests Model
@@ -22,11 +32,12 @@ use Cake\Database\Schema\TableSchema;
  * @method \App\Model\Entity\AssociationRequest[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\AssociationRequest findOrCreate($search, callable $callback = null, $options = [])
  */
-class AssociationRequestsTable extends Table
+class AssociationRequestsTable extends Table implements EventListenerInterface
 {
 
     /**
-     * Initialize Schema method
+     * Initialize Schema method.
+     * Any custom type must be mapped here.
      *
      * @param TableSchema $schema
      * @return TableSchema
@@ -38,7 +49,9 @@ class AssociationRequestsTable extends Table
     }
 
     /**
-     * Initialize method
+     * Initialize method.
+     * Any relationship, component or custom setup
+     * must be place here.
      *
      * @param array $config The configuration for the Table.
      * @return void
@@ -52,8 +65,7 @@ class AssociationRequestsTable extends Table
         $this->setPrimaryKey('id');
 
         $this->belongsTo('Users', [
-            'foreignKey' => 'user_id',
-            'joinType' => 'INNER'
+            'foreignKey' => 'user_id'
         ]);
         $this->belongsTo('Events', [
             'foreignKey' => 'event_id',
@@ -77,6 +89,21 @@ class AssociationRequestsTable extends Table
         $validator
             ->uuid('id')
             ->allowEmpty('id', 'create');
+
+        $validator
+            ->uuid('user')
+            ->requirePresence('user_id', 'create')
+            ->notEmpty('user_id');
+
+        $validator
+            ->uuid('event')
+            ->requirePresence('event_id', 'create')
+            ->notEmpty('event_id');
+
+        $validator
+            ->uuid('event_parent')
+            ->requirePresence('event_parent_id', 'create')
+            ->notEmpty('event_parent_id');
 
         $validator
             ->requirePresence('message', 'create')
@@ -104,5 +131,25 @@ class AssociationRequestsTable extends Table
         $rules->add($rules->existsIn(['event_parent_id'], 'EventParents'));
 
         return $rules;
+    }
+
+    /**
+     * Get all pending association requests for events
+     * created by the user
+     *
+     * @param string $user_id
+     * @return AssociationRequest[]
+     */
+    public function getAssociationRequests($user_id)
+    {
+       $associationRequests = $this->find()
+           ->where(['AssociationRequests.status' => Status::getNameByValue(Status::PENDING)])
+           ->innerJoinWith('EventParents', function ($q) use ($user_id) {
+               return $q->where(['EventParents.user_id' => $user_id]);
+           })
+           ->contain(['Events', 'EventParents'])
+           ->toArray();
+
+       return $associationRequests;
     }
 }

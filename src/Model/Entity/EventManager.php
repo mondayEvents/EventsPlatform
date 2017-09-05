@@ -30,4 +30,9 @@ class EventManager extends Entity
         '*' => true,
         'id' => false
     ];
+
+    public function setUser(User $user)
+    {
+        $this->user = $user;
+    }
 }

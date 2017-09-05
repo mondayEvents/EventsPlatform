@@ -1,6 +1,7 @@
 <?php
 namespace App\Model\Table;
 
+use Cake\Network\Exception\UnauthorizedException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use App\Model\Table\AppTable;
@@ -13,12 +14,14 @@ use App\Model\Rule\{
     NotSameTimeAndPlace,
     IsExclusive
 };
+use Symfony\Component\Console\Exception\LogicException;
 
 /**
  * Activities Model
  *
  * @property \App\Model\Table\EventsTable|\Cake\ORM\Association\BelongsTo $Events
  * @property \App\Model\Table\PanelistsTable|\Cake\ORM\Association\BelongsTo $Panelists
+ *  * @property \App\Model\Table\PanelistsTable|\Cake\ORM\Association\BelongsTo $Users
  * @property \App\Model\Table\ThemesTable|\Cake\ORM\Association\BelongsTo $Themes
  * @property \App\Model\Table\EventPlacesTable|\Cake\ORM\Association\BelongsTo $EventPlaces
  * @property \App\Model\Table\ActivityPlacesTable|\Cake\ORM\Association\HasMany $ActivityPlaces
@@ -62,26 +65,23 @@ class ActivitiesTable extends AppTable
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
-        $this->belongsTo('Events', [
-            'foreignKey' => 'event_id',
-//            'joinType' => 'INNER'
-        ]);
-        $this->belongsTo('Speakers', [
-            'foreignKey' => 'speaker_id',
-//            'joinType' => 'INNER'
-        ]);
-        $this->belongsTo('Tracks', [
-            'foreignKey' => 'track_id'
-        ]);
+        $this->belongsTo('Events');
+        $this->belongsTo('Users');
+        $this->belongsTo('Speakers');
+        $this->belongsTo('Tracks');
+        $this->belongsTo('Users');
         $this->belongsTo('EventPlaces', [
             'foreignKey' => 'event_place_id',
-            'bindingKey' => 'id',
-//            'joinType' => 'INNER'
+            'bindingKey' => 'id'
         ]);
 
-        $this->hasMany('RegistrationItems', [
-            'foreignKey' => 'activity_id'
+        $this->belongsToMany('Users', [
+            'joinTable' => 'attendees',
+            'foreignKey' => 'activity_id',
+            'targetForeignKey' => 'user_id'
         ]);
+
+        $this->hasMany('RegistrationItems');
     }
 
     /**
@@ -116,7 +116,6 @@ class ActivitiesTable extends AppTable
                 return $context['data']['type'] !== ActivityType::SPARE_TIME;
             })
             ->notEmpty('price');
-
 
         $validator
             ->requirePresence('start_at', 'create')
@@ -160,9 +159,7 @@ class ActivitiesTable extends AppTable
      */
     public function biggerThanStart ($value, $context)
     {
-
-        if ($value <= $context['data']['start_at'])
-        {
+        if ($value <= $context['data']['start_at']) {
             return false;
         }
         return true;
@@ -177,10 +174,8 @@ class ActivitiesTable extends AppTable
      */
     public function notPast ($value, $context)
     {
-
         $is_past = Time::createFromFormat('Y-m-d H:i:s', $value, 'UTC')->isPast();
-        if ($is_past)
-        {
+        if ($is_past) {
             return false;
         }
         return true;
@@ -196,10 +191,12 @@ class ActivitiesTable extends AppTable
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->isUnique(['id']));
+        $rules->add($rules->existsIn(['user_id'], 'Users'));
         $rules->add($rules->existsIn(['event_id'], 'Events'));
         $rules->add($rules->existsIn(['speaker_id'], 'Speakers'));
         $rules->add($rules->existsIn(['track_id'], 'Tracks'));
-//        $rules->add($rules->existsIn(['event_place_id', 'event_id'], 'EventPlaces'));
+
+        $rules->add($rules->existsIn(['event_place_id'], 'EventPlaces'));
 
         $rules->add(new NotSameTimeAndPlace(), '_notSameTimeAndPlace', [
             'errorField' => 'activity',
@@ -212,5 +209,30 @@ class ActivitiesTable extends AppTable
         ]);
 
         return $rules;
+    }
+
+
+    /**
+     * Custom finder for finding matching event and event places
+     *
+     * @param $place_id
+     * @param $event_id
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function findEventPlace ($place_id, $event_id)
+    {
+        $place = $this->EventPlaces->find()
+            ->where([
+                'EventPlaces.id' => $place_id,
+                'EventPlaces.event_id' => $event_id
+            ])
+            ->contain([])
+            ->first();
+
+        if (empty($places)) {
+            throw new LogicException('This event place does not belongs to your event');
+        }
+
+        return $place;
     }
 }
