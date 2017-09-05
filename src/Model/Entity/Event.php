@@ -220,5 +220,63 @@ class Event extends Entity
         $this->event_places[] = $place;
         $this->setDirty('event_places', true);
     }
+
+
+    public function setCoupon (Coupon $coupon, User $user)
+    {
+        $this->mustBeOwner($user);
+
+        if (empty($this->coupons)) {
+            $this->coupons = [];
+        }
+
+        $this->coupons[] = $coupon;
+        $this->setDirty('coupons', true);
+    }
+
+    public function setCompany(Company $company, $user)
+    {
+        $this->mustBeOwner($user);
+
+        if (empty($this->companies)) {
+            $this->companies = [];
+        }
+        $this->companies[] = $company;
+    }
+
+    /**
+     * @param $user
+     * @throws \Exception
+     */
+    public function mustBeOwner($user)
+    {
+        if (!$this->isOwnedBy($user)) {
+            throw new \Exception(__('You do not own this event!'));
+        }
+    }
+
+    public function setTrack(Track $track, User $user)
+    {
+        $this->mustBeOwner($user);
+
+        if (empty($this->tracks)) {
+            $this->tracks = [];
+        }
+        $this->tracks[] = $track;
+    }
+
+    public function isRegistered (User $user)
+    {
+        $registered = false;
+        foreach ($this->registrations as $registration) {
+            if ($registration->user_id == $user->id) {
+                $registered = true;
+            }
+        }
+
+        if (!$registered) {
+            throw new \Exception(__('This user is not registered to the event'));
+        }
+    }
     
 }
