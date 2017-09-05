@@ -2,33 +2,36 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use App\Model\Contract\HttpClientInterface;
 use App\Model\Entity\AssociationRequest;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
 use Cake\ORM\Entity;
+use Cake\ORM\Exception\PersistenceFailedException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use Exception;
 use Cake\Event\Event;
 use App\Database\Enum\EventTypeEnum as EventType;
+use App\Database\Enum\EventStatusEnum as EventStatus;
 /**
  * Events Controller
  *
  * @property \App\Model\Table\EventsTable $Events
-
  * @method \App\Model\Entity\Event[] paginate($object = null, array $settings = [])
  */
 class EventsController extends AppController
 {
-
     /**
-     * @Assisted
+     *
      */
-    public function setHttpClient(HttpClientInterface $db)
+    public function initialize()
     {
-        $this->db = $db;
+        parent::initialize();
+        $this->Auth->allow(['index','view']);
     }
+
     /**
      * Index method
      *
@@ -38,41 +41,50 @@ class EventsController extends AppController
     {
         $this->paginate = [
             'contain' => ['Users'],
-            'conditions' => ['Events.published' => 1]
+            'conditions' => [
+                'Events.status IN' => [
+                    EventStatus::getNameByValue(EventStatus::NEW),
+                    EventStatus::getNameByValue(EventStatus::OPEN)
+                ]
+            ]
         ];
-        $events = $this->paginate($this->Events);
 
-        $this->set(compact('events'));
-        $this->set('_serialize', ['events']);
+        $this->setResponseMessage(['events' => $this->paginate($this->Events)]);
+        $this->buildResponse();
     }
 
     /**
      * View method
      *
-     * @param string|null $id Event id.
+     * @param string|null $event_id Event id.
      * @return \Cake\Http\Response|void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
+    public function view($event_id = null)
     {
-        $activity_associations = ['Speakers', 'EventPlaces', 'Tracks'];
-        $event = $this->Events->get($id,
-            ['contain' =>
-                [
-                    'Users',
-                    'Coupons',
-                    'SubEvents' => ['Activities' => $activity_associations],
-                    'Registrations',
-                    'Sponsorships',
-                    'Activities' => $activity_associations
-                ]
-            ]
-        );
+        $this->request->allowMethod(['get']);
 
-        $is_owner = $event->isOwner($this->Auth->user('id'));
+        try {
+            $event = $this->Events->viewDetails($event_id);
+            $is_owner = false;
 
-        $this->set(compact('event','is_owner'));
-        $this->set('_serialize', ['is_owner', 'event']);
+            if ($this->Auth->user('uid')) {
+                $user = $this->Events->Users->get($this->Auth->user('uid'));
+                $is_owner = $event->isOwnedBy($user);
+            }
+
+            $this->setResponseMessage(compact('event','is_owner'));
+
+        } catch (PersistenceFailedException $exception) {
+            $this->setResponseCode(406);
+            $this->setResponseMessage(['error' => $exception->getEntity()->getErrors()]);
+
+        } catch (\Exception $exception) {
+            $this->setResponseCode(500);
+            $this->setResponseMessage(['message' => ['_error' => $exception->getMessage()]]);
+        }
+
+        $this->buildResponse();
     }
 
     /**
@@ -84,6 +96,27 @@ class EventsController extends AppController
     {
         $this->request->allowMethod(['post']);
 
+        try {
+            $event = $this->Events->newEntity($this->request->getData());
+            $event->user = $this->Events->Users->get($this->Auth->user('uid'));
+            $event->tags = $this->Events->Tags->find()
+                ->where(['Tags.id IN' => (array) $this->request->getData('tags')])
+                ->select(['id','name'])
+                ->toList();
+
+            $event = $this->Events->saveOrFail($event);
+            $this->setResponseMessage(compact('event'));
+
+        } catch (PersistenceFailedException $exception) {
+            $this->setResponseCode(406);
+            $this->setResponseMessage(['error' => $exception->getEntity()->getErrors()]);
+
+        } catch (\Exception $exception) {
+            $this->setResponseCode(500);
+            $this->setResponseMessage(['message' => ['_error' => $exception->getMessage()]]);
+        }
+
+        $this->buildResponse();
     }
 
     /**
@@ -97,6 +130,45 @@ class EventsController extends AppController
         $this->request->allowMethod(['get']);
 
         $types = EventType::getConstants(true);
-        $this->response(200, compact('types'));
+        $this->setResponseMessage(compact('types'));
+        $this->buildResponse();
+    }
+
+    /**
+     * List event's detail schedule
+     *
+     * @return \Cake\Http\Response|void|null Renders JSON response.
+     */
+    public function schedule ($event_id = null)
+    {
+        $this->request->allowMethod(['get']);
+
+        $activity_associations = [
+            'Speakers',
+            'EventPlaces' => function ($q) {
+                return $q->formatResults(function($results) {
+                    return $results->map(function($container) {
+                        $container['children'] = $this->Events->EventPlaces
+                            ->findById($container->id)
+                            ->find('threaded')
+                            ->toArray();
+                        return $container;
+                    });
+                });
+            },
+            'Tracks'
+        ];
+
+        $schedule = $this->Events->get($event_id, ['contain' => [
+            'Coupons',
+            'Users',
+            'SubEvents' => ['Activities' => $activity_associations],
+            'Companies',
+            'Activities' => $activity_associations,
+        ]
+        ]);
+
+        $this->setResponseMessage(compact('schedule'));
+        $this->buildResponse();
     }
 }

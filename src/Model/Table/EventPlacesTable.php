@@ -1,6 +1,8 @@
 <?php
 namespace App\Model\Table;
 
+use App\Model\Entity\EventPlace;
+use Cake\Network\Exception\UnauthorizedException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use App\Model\Table\AppTable;
@@ -32,10 +34,12 @@ class EventPlacesTable extends AppTable
 	public function initialize(array $config)
     {
         parent::initialize($config);
+
+        $this->addBehavior('Tree');
  
         $this->setTable('event_places');
         $this->setDisplayField('name');
-        $this->setPrimaryKey(['id', 'event_id']);
+        $this->setPrimaryKey(['id']);
  
         $this->belongsTo('Events', [
             'foreignKey' => 'event_id',
@@ -77,6 +81,26 @@ class EventPlacesTable extends AppTable
     }
 
     /**
+     * @param string $current_user
+     * @param string $event_id
+     * @param array $data
+     * @return EventPlace|\Cake\Datasource\EntityInterface
+     *
+     * @throws UnauthorizedException If the user doesnt own the event
+     */
+    public function addEventPlace (string $current_user, string $event_id, array $data)
+    {
+        $user = $this->Events->Users->get($current_user);
+        $event = $this->Events->get($event_id, ['contain' => ['Users']]);
+        $place = $this->newEntity($data);
+
+        $event->addEventPlace($place, $user);
+
+        $place = $this->Events->saveOrFail($event);
+        return $place;
+    }
+
+    /**
      * Returns a rules checker object that will be used for validating
      * application integrity.
      *
@@ -85,11 +109,10 @@ class EventPlacesTable extends AppTable
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['events_id'], 'Events'));
-		
-		$rules->add($rules->isUnique(
+        $rules->add($rules->isUnique(
             ['name', 'event_id'], __('Your event already has a place with that name')
         ));
+        $rules->add($rules->existsIn(['events_id'], 'Events'));
 
         return $rules;
     }

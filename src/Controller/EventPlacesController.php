@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\ORM\Exception\PersistenceFailedException;
 
 /**
  * EventPlaces Controller
@@ -46,26 +47,32 @@ class EventPlacesController extends AppController
         $this->set('_serialize', ['eventPlace']);
     }
 
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
-    public function add()
-    {
-        $eventPlace = $this->EventPlaces->newEntity();
-        if ($this->request->is('post')) {
-            $eventPlace = $this->EventPlaces->patchEntity($eventPlace, $this->request->getData());
-            if ($this->EventPlaces->save($eventPlace)) {
-                $this->Flash->success(__('The event place has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The event place could not be saved. Please, try again.'));
+    public function add($event_id = null)
+    {
+        $this->request->allowMethod(['post']);
+
+        try {
+            $place = $this->EventPlaces->addEventPlace($this->Auth->user('uid'), $event_id, $this->request->getData());
+            $this->setResponseMessage([
+                'event_place' => [
+                    'id' => $place->id,
+                    'event_id' => $place->event_id,
+                    'parent_id' => $place->parent_id,
+                    'name' => $place->name
+                ]
+            ]);
+
+        } catch (PersistenceFailedException $exception) {
+            $this->setResponseCode(406);
+            $this->setResponseMessage(['error' => $exception->getEntity()->getErrors()]);
+
+        } catch (\Exception $exception) {
+            $this->setResponseCode(500);
+            $this->setResponseMessage(['message' => ['_error' => $exception->getMessage()]]);
         }
-        $events = $this->EventPlaces->Events->find('list', ['limit' => 200]);
-        $this->set(compact('eventPlace', 'events'));
-        $this->set('_serialize', ['eventPlace']);
+
+        $this->buildResponse();
     }
 
     /**

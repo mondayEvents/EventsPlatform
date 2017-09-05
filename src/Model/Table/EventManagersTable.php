@@ -60,9 +60,25 @@ class EventManagersTable extends AppTable
             ->allowEmpty('id', 'create');
 
         $validator
-            ->boolean('is_active')
-            ->requirePresence('is_active', 'create')
-            ->notEmpty('is_active');
+            ->dateTime('created_at')
+            ->allowEmpty('created_at');
+
+        $validator
+            ->dateTime('modified_at')
+            ->requirePresence('modified_at', 'update')
+            ->notEmpty('modified_at');
+
+        $validator
+            ->requirePresence('user_id', 'create')
+            ->notEmpty('user_id');
+
+        $validator
+            ->requirePresence('event_id', 'create')
+            ->notEmpty('event_id');
+
+        $validator
+            ->boolean('active')
+            ->allowEmpty('active', 'create');
 
         return $validator;
     }
@@ -77,7 +93,10 @@ class EventManagersTable extends AppTable
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['event_id'], 'Events'));
-        $rules->add($rules->existsIn(['users_id'], 'Users'));
+        $rules->add($rules->existsIn(['user_id'], 'Users'));
+        $rules->add($rules->isUnique(
+            ['user_id', 'event_id'], __('You are already a manager of this event')
+        ));
 
         return $rules;
     }
