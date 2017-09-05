@@ -2,9 +2,12 @@
 namespace App\Model\Table;
 
 use Cake\Core\Configure;
+use Cake\Network\Exception\BadRequestException;
+use Cake\ORM\Exception\PersistenceFailedException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use App\Model\Table\AppTable;
+use Cake\Utility\Text;
 use Cake\Validation\Validator;
 use Cake\Utility\Security;
 use Firebase\JWT\JWT;
@@ -37,8 +40,6 @@ class UsersTable extends AppTable
     {
         parent::initialize($config);
 
-//        $this->addBehavior('Acl.Acl', ['type' => 'requester']);
-
         $this->setTable('users');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
@@ -47,6 +48,20 @@ class UsersTable extends AppTable
         $this->addBehavior('Acl.Acl', [
             'type'      => 'requester',
             'enabled'   => false
+        ]);
+
+        $this->belongsToMany('Tags', [
+            'joinTable' => 'users_tags',
+        ]);
+        $this->belongsToMany('Tracks', [
+            'joinTable' => 'track_coordinators',
+            'foreignKey' => 'user_id',
+            'targetForeignKey' => 'track_id'
+        ]);
+        $this->belongsToMany('Activities', [
+            'joinTable' => 'attendees',
+            'foreignKey' => 'user_id',
+            'targetForeignKey' => 'activity_id'
         ]);
 
         $this->belongsTo('Groups', [
@@ -74,17 +89,41 @@ class UsersTable extends AppTable
             ->allowEmpty('id', 'create');
 
         $validator
-            ->requirePresence('username', 'create')
+            ->requirePresence('username','create')
             ->notEmpty('username')
-            ->add('username', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
+            ->add('username', 'validFormat', [
+                'rule' => ['custom', '/^\S+@\S+$/'],
+                'message' => 'Invalid email format'
+            ])
+            ->add('username', 'unique', [
+                'rule' => 'validateUnique',
+                'provider' => 'table',
+                'message' => __('This email is already in use!')
+            ]);
 
         $validator
             ->requirePresence('password', 'create')
-            ->notEmpty('password');
+            ->notEmpty('password')
+            ->add('password', [
+                'length' => [
+                    'rule' => ['minLength', 6],
+                    'message' => 'Your password needs to be at least 6 characters long',
+                ]
+            ]);
 
         $validator
-            ->requirePresence('name', 'create')
-            ->notEmpty('name');
+            ->requirePresence('name')
+            ->notEmpty('name')
+            ->add('name', 'validFormat', [
+                'rule' => ['custom', '/^[\p{L}\s]+$/'],
+                'message' => 'Invalid characters'
+            ])
+            ->add('name', [
+                'length' => [
+                    'rule' => ['minLength', 3],
+                    'message' => 'Your name needs to be at least 3 characters long',
+                ]
+            ]);
 
         $validator
             ->dateTime('birthdate')
@@ -113,29 +152,15 @@ class UsersTable extends AppTable
     }
 
     /**
-     * @param null $user_id
-     * @param null $group_id
-     * @param null $jti
-     * @return string
-     * @throws \Exception
+     * Checks if user is logged and throws exeception if it is.
+     *
+     * @param null|array $is_logged
+     * @throws BadRequestException When user is logged
      */
-    public function createToken ($user_id = null, $group_id = null, $jti = null)
+    public function cantBeLogged($is_logged)
     {
-        if (empty($user_id) || empty($group_id) || empty($jti))
-        {
-            throw new \Exception(__('Not enough data for token generation'));
+        if (!is_null($is_logged)) {
+            throw new BadRequestException(__("You are already registered or logged in!"));
         }
-
-        $input = JWT::encode(
-                [
-                    'uid' => $user_id,
-                    'gid' => base64_encode(Security::encrypt($group_id, Configure::read('encriptionKey'))),
-                    'jti' => $jti,
-                    'exp' =>  time() + 604800
-                ],
-                Security::salt()
-            );
-      
-        return $input;
     }
 }
