@@ -31,4 +31,9 @@ class Coupon extends Entity
         '*' => true,
         'id' => false
     ];
+
+    public function getDiscount(CouponInterface $strategy, float $value)
+    {
+        $strategy->calculateDiscount($value, $this->amount);
+    }
 }
