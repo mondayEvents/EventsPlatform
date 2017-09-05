@@ -158,7 +158,43 @@ class Event extends Entity
          }
          return $coupons;
      }
- 
+
+     
+    public function setRegistration (Registration $registration)
+    {
+        $this->opennessChecker();
+
+        foreach ($this->registrations as $reg) {
+            if ($reg->user_id == $registration->user->id) {
+                throw new \Exception(__('You are already registered to this event'));
+            }
+        }
+
+        $registration->isNew(true);
+        $this->registrations[] = $registration;
+        $this->setDirty('registrations', true);
+    }
+
+
+    public function matchActivity ($activity_ids)
+    {
+        $activities = $this->getAllActivitiesAvailable();
+
+        $exist_activities = [];
+        foreach ($activities as $activity) {
+            foreach ($activity_ids as $key => $item) {
+                if ($activity->id == $item) {
+                    array_push($exist_activities, $activity);
+                }
+            }
+        }
+        $exist_activities = array_unique($exist_activities);
+        if (count($activities) > count($exist_activities)) {
+            throw new \Exception(__('One or more actitivities were not found'));
+        }
+
+        return $exist_activities;
+    }
 
     public function isPublished ()
     {
