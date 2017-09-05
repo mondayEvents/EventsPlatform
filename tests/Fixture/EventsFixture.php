@@ -19,11 +19,15 @@ class EventsFixture extends TestFixture
     public $fields = [
         'id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'user_id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
+        'parent_id' => ['type' => 'uuid', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'name' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
-        'date_start' => ['type' => 'timestamp', 'length' => null, 'null' => false, 'default' => 'CURRENT_TIMESTAMP(1)', 'comment' => '', 'precision' => null],
-        'date_end' => ['type' => 'timestamp', 'length' => null, 'null' => false, 'default' => '0000-00-00 00:00:00.0', 'comment' => '', 'precision' => null],
-        'tags' => ['type' => 'string', 'length' => 255, 'null' => true, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'date_start' => ['type' => 'timestamp', 'length' => 1, 'null' => false, 'default' => 'CURRENT_TIMESTAMP', 'comment' => '', 'precision' => null],
+        'date_end' => ['type' => 'timestamp', 'length' => 1, 'null' => false, 'default' => 'CURRENT_TIMESTAMP', 'comment' => '', 'precision' => null],
         'type' => ['type' => 'integer', 'length' => 3, 'unsigned' => true, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
+        'price' => ['type' => 'decimal', 'length' => 13, 'precision' => 4, 'unsigned' => false, 'null' => false, 'default' => '0.0000', 'comment' => ''],
+        'pay_by_activity' => ['type' => 'boolean', 'length' => null, 'null' => false, 'default' => '0', 'comment' => '', 'precision' => null],
+        'status' => ['type' => 'integer', 'length' => 3, 'unsigned' => false, 'null' => false, 'default' => '0', 'comment' => '', 'precision' => null, 'autoIncrement' => null],
+        'active' => ['type' => 'boolean', 'length' => null, 'null' => false, 'default' => '1', 'comment' => '', 'precision' => null],
         '_indexes' => [
             'fk_events_users_idx' => ['type' => 'index', 'columns' => ['user_id'], 'length' => []],
         ],
@@ -45,13 +49,17 @@ class EventsFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => '5fe6fb34-a104-450c-b0af-b09e76f0739f',
-            'user_id' => 'd84f1ad0-de3f-4cb4-bf6b-859a84c50dbc',
+            'id' => '511121f6-7be0-434d-ae43-5cf56554e1d2',
+            'user_id' => 'af6123b6-f64a-41a3-ace9-29ab9a831425',
+            'parent_id' => '2d32705d-bbe1-475d-adf0-4c754850c212',
             'name' => 'Lorem ipsum dolor sit amet',
-            'date_start' => 1502161118,
-            'date_end' => 1502161118,
-            'tags' => 'Lorem ipsum dolor sit amet',
-            'type' => 1
+            'date_start' => 1504613906,
+            'date_end' => 1504613906,
+            'type' => 1,
+            'price' => 1.5,
+            'pay_by_activity' => 1,
+            'status' => 1,
+            'active' => 1
         ],
     ];
 }

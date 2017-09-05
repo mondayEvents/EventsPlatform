@@ -43,7 +43,7 @@ class CompaniesFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => '4865796c-ea00-47ad-b1b2-bdc70d49bd20',
+            'id' => '53396cdd-3cfd-4576-a674-2179efb67883',
             'name' => 'Lorem ipsum dolor sit amet',
             'logo' => 'Lorem ipsum dolor sit amet',
             'site' => 'Lorem ipsum dolor sit amet'
