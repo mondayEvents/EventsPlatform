@@ -4,6 +4,9 @@ namespace App\Controller;
 use App\Database\Enum\ActivityTypeEnum as ActivityType;
 use App\Controller\AppController;
 use App\Model\Entity\Activity;
+use Cake\Network\Exception\BadRequestException;
+use Cake\ORM\Exception\PersistenceFailedException;
+
 
 /**
  * Activities Controller
@@ -23,7 +26,7 @@ class ActivitiesController extends AppController
     public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['types']);
+        $this->Auth->allow(['types','view']);
     }
 
     /**
@@ -49,15 +52,28 @@ class ActivitiesController extends AppController
      * @return \Cake\Http\Response|void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
-    {
-        $activity = $this->Activities->get($id, [
-            'contain' => ['Events', 'Panelists', 'Themes', 'EventPlaces', 'ActivityPlaces', 'Concomitance', 'RegistrationItems']
-        ]);
-
-        $this->set('activity', $activity);
-        $this->set('_serialize', ['activity']);
-    }
+     
+     public function view($id = null)
+     {
+         $this->request->allowMethod(['get']);
+ 
+         try {
+             $activity = $this->Activities->get($id, [
+                 'contain' => ['Events', 'Speakers', 'Tracks', 'EventPlaces']
+             ]);
+             $this->setResponseMessage(compact('activity'));
+ 
+         } catch (PersistenceFailedException $exception) {
+             $this->setResponseCode(406);
+             $this->setResponseMessage(['error' => $exception->getEntity()->getErrors()]);
+ 
+         } catch (\Exception $exception) {
+             $this->setResponseCode(500);
+             $this->setResponseMessage(['message' => ['_error' => $exception->getMessage()]]);
+         }
+ 
+         $this->buildResponse();
+     }
 
     /**
      * Add method
