@@ -56,7 +56,7 @@ class NotSameTimeAndPlace extends AppRule
     {
         $table_alias = (string) $this->getAlias();
 
-        $event_id = $this->getEntity()->event_id;
+        $event_id = $this->getEntity()->event->id;
         $end_at = $this->getEntity()->end_at;
         $start_at = $this->getEntity()->start_at;
 
@@ -70,13 +70,6 @@ class NotSameTimeAndPlace extends AppRule
         $whereEnd = array_merge($associated_condition,
             [$table_alias . '.' . $this->getColumnNames()->end . ' >=' => $start_at]
         );
-
-        if (ActivityType::getValueByName($this->getEntity()->type) === ActivityType::SPARE_TIME) {
-            unset(
-                $whereStart[$table_alias . '.' . $this->getColumnNames()->associated_id],
-                $whereEnd[$table_alias . '.' . $this->getColumnNames()->associated_id]
-            );
-        }
 
         return (bool) $this->getRepository()
             ->find()
