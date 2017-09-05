@@ -3,12 +3,13 @@ namespace App\Model\Table;
 
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
-use App\Model\Table\AppTable;
+use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
  * Companies Model
  *
+ * @property \App\Model\Table\EventsTable|\Cake\ORM\Association\BelongsTo $Events
  * @property \App\Model\Table\SponsorshipsTable|\Cake\ORM\Association\HasMany $Sponsorships
  *
  * @method \App\Model\Entity\Company get($primaryKey, $options = [])
@@ -19,7 +20,7 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\Company[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Company findOrCreate($search, callable $callback = null, $options = [])
  */
-class CompaniesTable extends AppTable
+class CompaniesTable extends Table
 {
 
     /**
@@ -36,6 +37,10 @@ class CompaniesTable extends AppTable
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
+        $this->belongsTo('Events', [
+            'foreignKey' => 'event_id',
+            'joinType' => 'INNER'
+        ]);
         $this->hasMany('Sponsorships', [
             'foreignKey' => 'company_id'
         ]);
@@ -65,6 +70,10 @@ class CompaniesTable extends AppTable
         $validator
             ->allowEmpty('site');
 
+        $validator
+            ->boolean('active')
+            ->allowEmpty('active');
+
         return $validator;
     }
 
@@ -79,6 +88,7 @@ class CompaniesTable extends AppTable
     {
         $rules->add($rules->isUnique(['name']));
         $rules->add($rules->isUnique(['id']));
+        $rules->add($rules->existsIn(['event_id'], 'Events'));
 
         return $rules;
     }
