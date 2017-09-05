@@ -84,6 +84,34 @@ class Event extends Entity
          return array_search($user->id, $user_ids, true) !== false;
      }
 
+
+    /**
+     * Adds an event as a child of another event (subevents concept)
+     *
+     * @param Event $parent
+     * @param User $user
+     * @throws NotFoundException|PersistenceFailedException
+     */
+    public function setParent (Event $parent, User $user)
+    {
+        if (!empty($this->parent_id) && ($this->parent_id !== $parent->id)) {
+            throw new LogicException('It seems that the asker event is already associated to another event');
+        }
+
+        $save_as_manager = true;
+        foreach ($this->event_managers as $event_manager) {
+            if ($event_manager->event_id == $this->id && $event_manager->user_id == $user->id) {
+                $save_as_manager = false;
+            }
+        }
+
+        if ($save_as_manager) {
+            $this->event_managers = array_push($this->event_managers, $user);
+        }
+        $this->parent_id = $parent->id;
+    }
+
+    
     public function isPublished ()
     {
         return (bool) $this->published;
