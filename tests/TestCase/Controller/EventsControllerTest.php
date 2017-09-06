@@ -2,7 +2,7 @@
 namespace App\Test\TestCase\Controller;
 
 use App\Controller\EventsController;
-use App\Database\Enum\EventStatusEnum;
+use App\Database\Enum\AppEnum;
 use App\Database\Enum\EventTypeEnum;
 use Cake\Http\Client;
 use Cake\ORM\TableRegistry;
@@ -121,7 +121,7 @@ class EventsControllerTest extends IntegrationTestCase
     public function test_add_event()
     {
         $data = [
-            'name' => 'Evento Testecc',
+            'name' => 'Evento Test',
             'date_start' => '2017-12-05 00:46:09',
             'date_end' => '2017-12-10 00:46:09',
             'type' => 1,
@@ -134,7 +134,7 @@ class EventsControllerTest extends IntegrationTestCase
         $this->configRequest([
             'headers' => [
                 'Accept' => 'application/json',
-                'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIwNmUwNTE4ZC1kOThjLTRhNzAtYmI5MS02YTc5MmNkNDI4YzYiLCJnaWQiOiJZVEExWVRZd1l6aGtPVFl4T0RCaE5tWmtZelkyWlRVeU5EbG1OVGhrTXpKallqQmhOVEJpTVdWaE9UUmxPREZqWkRnME1qSmhaVGhpWW1ZeFlUVXdZWHBGT0lHbkZvcGo1QU9XcTlUc2FQVUxBMmZWNWZLT0VDaGlPWTRESndiMyIsImp0aSI6IjU0ZWU4Y2ZiLTIzN2QtNGVlMy1iOTkyLWRiMThjMGVhNWVkYyIsImV4cCI6MTUwNDk4OTIzMX0.TUORbXNpUQtE4BG3CDTXxN3XTIKiBzKYKTJshfMzxhI'
+                'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiJiOGY1YzJhMi0yMjBmLTQ3ZWItYWViNS1jZmU5NTAzODU1MTAiLCJnaWQiOiJZbVptT0RRek5XSTRaR00wT1RKaE9EZGhOakUzTkdNMFlUYzNPR1l3TjJJM1lqaGpOakU1TXpsaFpESXdORFkyTW1FeVpqTTNPREprTkdFeE5qQTVOM2o4dnB5YkxIdWVabmV3aUMxV3hjY3VaZUMzVlA5RVZnZTA4cGFUaGN5UyIsImp0aSI6ImY0YzU3NGZkLTg5YmMtNDIwOS1iYmI1LWY0ZGFmYzVlZDhkYSIsImV4cCI6MTUwNTMwNjU1NX0.nb05vbKiAinZqzaBqqeitucqK7EINW-H5DQj3ycoZ1M'
             ],
             'body' => $data
         ]);
