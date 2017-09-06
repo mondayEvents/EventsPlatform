@@ -23,7 +23,7 @@ class CouponsFixture extends TestFixture
         'amount' => ['type' => 'float', 'length' => null, 'precision' => null, 'unsigned' => false, 'null' => false, 'default' => '0', 'comment' => ''],
         'type' => ['type' => 'integer', 'length' => 3, 'unsigned' => false, 'null' => false, 'default' => '1', 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'start_at' => ['type' => 'timestamp', 'length' => null, 'null' => false, 'default' => 'CURRENT_TIMESTAMP', 'comment' => '', 'precision' => null],
-        'end_at' => ['type' => 'timestamp', 'length' => null, 'null' => false, 'default' => '0000-00-00 00:00:00', 'comment' => '', 'precision' => null],
+        'end_at' => ['type' => 'timestamp', 'length' => null, 'null' => true, 'default' => '', 'comment' => '', 'precision' => null],
         'automatic' => ['type' => 'boolean', 'length' => null, 'null' => false, 'default' => '0', 'comment' => '', 'precision' => null],
         'active' => ['type' => 'boolean', 'length' => null, 'null' => false, 'default' => '1', 'comment' => '', 'precision' => null],
         '_indexes' => [
@@ -48,13 +48,13 @@ class CouponsFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => '73ff1a6f-c074-42e5-a44e-5a27f6cb9edd',
-            'event_id' => '3037540b-0ab2-4e49-90b4-b9b3409fccf2',
+            'id' => 'eef0a17e-ae9e-4e2c-9cef-e1ba3a5e284c',
+            'event_id' => '79e132f3-b593-4dc0-be2d-b1cc5d640ad1',
             'code' => 'Lorem ipsum dolor sit amet',
             'amount' => 1,
             'type' => 1,
-            'start_at' => 1504613905,
-            'end_at' => 1504613905,
+            'start_at' => 1504638195,
+            'end_at' => 1504638195,
             'automatic' => 1,
             'active' => 1
         ],

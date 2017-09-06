@@ -43,8 +43,8 @@ class SponsorshipsFixture extends TestFixture
      */
     public $records = [
         [
-            'event_id' => 'b58c3505-641a-44f5-a0a8-dfeb6617ff5a',
-            'company_id' => '05b23582-125b-406f-933a-682fd8d79a7c',
+            'event_id' => 'bc255d0c-e8ca-438d-99a7-ddd52bab027a',
+            'company_id' => 'b71a48bc-df9d-48ca-b1b4-0bb479bcdb44',
             'type' => 'Lorem ipsum dolor sit amet'
         ],
     ];

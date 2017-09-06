@@ -10,6 +10,7 @@ use Cake\TestSuite\Fixture\TestFixture;
 class UsersFixture extends TestFixture
 {
 
+    public $import = ['table' => 'Users'];
     /**
      * Fields
      *
@@ -22,7 +23,7 @@ class UsersFixture extends TestFixture
         'username' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'password' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'name' => ['type' => 'string', 'length' => 100, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
-        'birthdate' => ['type' => 'timestamp', 'length' => 1, 'null' => false, 'default' => 'CURRENT_TIMESTAMP', 'comment' => '', 'precision' => null],
+        'birthdate' => ['type' => 'string', 'length' => 255, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'jti' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'active' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => '1', 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'deleted' => ['type' => 'integer', 'length' => 4, 'unsigned' => false, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
@@ -50,15 +51,15 @@ class UsersFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => '42bd6feb-e81a-4b86-98c0-a012189b4493',
+            'id' => '06e0518d-d98c-4a70-bb91-6a792cd428c6',
             'group_id' => 1,
-            'username' => 'Lorem ipsum dolor sit amet',
-            'password' => 'Lorem ipsum dolor sit amet',
+            'username' => 'brunoserrabr@gmail.comx',
+            'password' => '$2y$10$CpzSjrrBsTGzRtYnwtY/aeLdrB9HK2VTGrTfURLLcBo003kNlTsri',
             'name' => 'Lorem ipsum dolor sit amet',
-            'birthdate' => 1504613906,
-            'jti' => 'Lorem ipsum dolor sit amet',
+            'birthdate' => 1504638195,
+            'jti' => '54ee8cfb-237d-4ee3-b992-db18c0ea5edc',
             'active' => 1,
-            'deleted' => 1
+            'deleted' => null
         ],
     ];
 }

@@ -44,9 +44,9 @@ class RegistrationItemsFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => 'a112aeea-b5ac-4d3c-998d-09b1e97f1493',
-            'registration_id' => '32f86da5-0f11-4e80-b14e-d0724f104b02',
-            'activity_id' => 'a4cdd0f7-8170-4f79-a863-fc73e977e6a9',
+            'id' => '85aa2429-7ed3-4830-a9c3-2a248631ff5e',
+            'registration_id' => '7addc52e-2772-45ba-9d02-5001acb3440f',
+            'activity_id' => '087d74ee-7b65-4859-a3d4-98c0cfc9d832',
             'price' => 1.5
         ],
     ];

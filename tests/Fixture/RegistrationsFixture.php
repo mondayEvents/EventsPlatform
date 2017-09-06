@@ -20,7 +20,7 @@ class RegistrationsFixture extends TestFixture
         'id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'event_id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'user_id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
-        'whenAn' => ['type' => 'timestamp', 'length' => 1, 'null' => false, 'default' => 'CURRENT_TIMESTAMP', 'comment' => '', 'precision' => null],
+        'created_at' => ['type' => 'timestamp', 'length' => null, 'null' => false, 'default' => 'CURRENT_TIMESTAMP', 'comment' => '', 'precision' => null],
         'active' => ['type' => 'boolean', 'length' => null, 'null' => false, 'default' => '1', 'comment' => '', 'precision' => null],
         '_indexes' => [
             'fk_registrations_users1_idx' => ['type' => 'index', 'columns' => ['user_id'], 'length' => []],
@@ -46,10 +46,10 @@ class RegistrationsFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => '4fcac21b-9533-4e8b-8cb7-5c6e8e38839f',
-            'event_id' => '461c876d-a63c-4058-8f81-2e8a6c3414a4',
-            'user_id' => 'f566c76d-046c-4b38-a4d2-066889a7e902',
-            'when' => 1504613906,
+            'id' => 'fb019aac-d9d5-4d7f-88f4-742a612c3211',
+            'event_id' => '09e2b398-5629-43fa-8df5-5bf29c6f0e5a',
+            'user_id' => '5f7fc95b-db96-4d74-86d1-49fe1f97df33',
+            'created_at' => 1504638195,
             'active' => 1
         ],
     ];
