@@ -43,6 +43,10 @@ abstract class AppEnum
     }
 
     /**
+     * @var null
+     */
+    private static $calledClass = NULL;
+    /**
      * Get Constants as array. If parameter pretty is true,
      * returns a cake-list-like array format
      *
@@ -56,7 +60,7 @@ abstract class AppEnum
             self::$constantsArray = [];
         }
 
-        $calledClass = get_called_class();
+        self::$calledClass = $calledClass = get_called_class();
 
         if (!array_key_exists($calledClass, self::$constantsArray))
         {
@@ -143,7 +147,7 @@ abstract class AppEnum
         $value = Text::slug(strtoupper($value), '_');
         if (!self::isValidName($value))
         {
-            throw new \Exception("Invalid enum name");
+            throw new \Exception("Invalid enum name (" . self::$calledClass . ")");
         }
 
         $constants = self::getConstants();
