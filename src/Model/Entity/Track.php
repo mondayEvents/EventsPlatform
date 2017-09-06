@@ -4,17 +4,17 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * EventManager Entity
+ * Track Entity
  *
  * @property string $id
- * @property string $event_id
- * @property string $users_id
- * @property bool $is_active
+ * @property string $events_id
+ * @property string $name
  *
  * @property \App\Model\Entity\Event $event
- * @property \App\Model\Entity\User $user
+ * @property \App\Model\Entity\Activity[] $activities
+ * @property \App\Model\Entity\TrackCoordinator[] $track_coordinators
  */
-class EventManager extends Entity
+class Track extends Entity
 {
 
     /**
@@ -31,8 +31,12 @@ class EventManager extends Entity
         'id' => false
     ];
 
-    public function setUser(User $user)
+    public function setManagers ($managers)
     {
-        $this->user = $user;
+        if (empty($this->users)) {
+            $this->users = [];
+        }
+
+        $this->users[] = $managers;
     }
 }

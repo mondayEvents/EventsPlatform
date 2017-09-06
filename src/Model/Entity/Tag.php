@@ -4,17 +4,16 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * EventManager Entity
+ * Tag Entity
  *
  * @property string $id
- * @property string $event_id
- * @property string $users_id
- * @property bool $is_active
- *
- * @property \App\Model\Entity\Event $event
- * @property \App\Model\Entity\User $user
+ * @property string $created_by
+ * @property string $name
+ * @property string $slug
+ * @property \Cake\I18n\FrozenTime $created_at
+ * @property bool $active
  */
-class EventManager extends Entity
+class Tag extends Entity
 {
 
     /**
@@ -30,9 +29,4 @@ class EventManager extends Entity
         '*' => true,
         'id' => false
     ];
-
-    public function setUser(User $user)
-    {
-        $this->user = $user;
-    }
 }

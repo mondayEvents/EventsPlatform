@@ -32,7 +32,7 @@ class AppRule
     /**
      * @var array
      */
-    private $_column_names = [
+    protected $_column_names = [
         'start' => 'start_at',
         'end' => 'end_at',
         'associated_id' => 'event_place_id'

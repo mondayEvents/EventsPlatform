@@ -20,8 +20,15 @@ use App\Database\Enum\ActivityTypeEnum as ActivityType;
  * @method \App\Model\Rule\AppRule getSchema()
  * @method \App\Model\Rule\AppRule populate($entity, array $options)
  */
-class NotSameTimeAndPlace extends AppRule
+class AutoCouponConcomitance extends AppRule
 {
+    /**
+     * @var array
+     */
+    protected $_column_names = [
+        'start' => 'start_at',
+        'end' => 'end_at'
+    ];
     /**
      * @param EntityInterface $entity
      * @param array $options
@@ -31,13 +38,13 @@ class NotSameTimeAndPlace extends AppRule
     public function __invoke(EntityInterface $entity, array $options): bool
     {
         $this->populate($entity, $options);
-        return $this->_notSameTimeAndPlace();
+        return $this->_couponConcomitance();
     }
 
     /**
      * @return bool
      */
-    private function _notSameTimeAndPlace (): bool
+    private function _couponConcomitance (): bool
     {
         $hasColumns = $this->columnChecker();
         if ($hasColumns->error)
@@ -54,28 +61,28 @@ class NotSameTimeAndPlace extends AppRule
      */
     private function _buildQuery (): bool
     {
-        $table_alias = (string) $this->getAlias();
+        if ($this->getEntity()->automatic == 0) {
+            return false;
+        }
 
-        $event_id = $this->getEntity()->event->id;
+        $table_alias = (string) $this->getAlias();
+//        dd($this->getEntity());
+        $event_id = $this->getEntity()->event_id;
         $end_at = $this->getEntity()->end_at;
         $start_at = $this->getEntity()->start_at;
 
-        $associated_id = $this->getEntity()->{$this->getColumnNames()->associated_id};
-        $associated_condition = [$table_alias . '.' . $this->getColumnNames()->associated_id => $associated_id];
+        $whereStart = [
+            $table_alias . '.' . $this->getColumnNames()->start . ' <=' => $end_at,
+            $table_alias . '.' . $this->getColumnNames()->start . ' >=' => $start_at
+        ];
 
-        $whereStart = array_merge($associated_condition,
-            [$table_alias . '.' . $this->getColumnNames()->start . ' <=' => $end_at],
-            [$table_alias . '.' . $this->getColumnNames()->start . ' >=' => $start_at]
-        );
-        $whereEnd = array_merge($associated_condition,
-            [$table_alias . '.' . $this->getColumnNames()->end . ' >=' => $start_at]
-        );
+        $whereEnd = [$table_alias . '.' . $this->getColumnNames()->end . ' >=' => $start_at];
 
         return (bool) $this->getRepository()
             ->find()
             ->where($whereStart)
             ->orWhere($whereEnd)
-            ->andWhere([$table_alias . '.' . 'event_id' => $event_id])
+            ->andWhere([$table_alias . '.' . 'event_id' => $event_id, $table_alias . '.' . 'automatic' => 1])
             ->contain([])
             ->count();
     }

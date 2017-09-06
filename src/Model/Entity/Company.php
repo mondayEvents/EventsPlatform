@@ -29,9 +29,4 @@ class Company extends Entity
         '*' => true,
         'id' => false
     ];
-
-    protected function _getCompany()
-    {
-        return $this->name . ' ltda';
-    }
 }

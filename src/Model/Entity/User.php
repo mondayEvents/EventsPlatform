@@ -5,12 +5,13 @@ use Cake\Core\Configure;
 use Cake\ORM\Entity;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Utility\Security;
+use Firebase\JWT\JWT;
 
 /**
  * User Entity
  *
  * @property string $id
- * @property int $groups_id
+ * @property int $group_id
  * @property string $username
  * @property string $password
  * @property string $name
@@ -36,8 +37,14 @@ class User extends Entity
      */
     protected $_accessible = [
         '*' => true,
+
         'id' => false,
-        'group_id' => false
+        'group_id' => false,
+        'group' => false,
+        'groups' => false,
+        'created' => false,
+        'modified' => false,
+        'tags' => false
     ];
 
     /**
@@ -46,7 +53,12 @@ class User extends Entity
      * @var array
      */
     protected $_hidden = [
-        'password'
+        'password',
+        'group',
+        'jti',
+        'created',
+        'modified',
+        'group_id'
     ];
 
     /**
@@ -60,6 +72,40 @@ class User extends Entity
         return (new DefaultPasswordHasher)->hash($password);
     }
 
+    /**
+     * Setter for name (normalize)
+     *
+     * @param $name
+     * @return string
+     */
+    protected function _setName ($name)
+    {
+        return ucwords($name);
+    }
+
+    /**
+     * Generates JWT Bearer Token
+     *
+     * @return string
+     */
+    public function getToken ()
+    {
+        $input = JWT::encode([
+            'uid' => $this->id,
+            'gid' => base64_encode(Security::encrypt($this->group->id, Configure::read('encriptionKey'))),
+            'jti' => $this->jti,
+            'exp' =>  time() + 604800
+        ],
+            Security::salt()
+        );
+        return $input;
+    }
+
+    /**
+     * Ties the user to the ACL
+     *
+     * @return array|null
+     */
     public function parentNode ()
     {
         if (!$this->id) {
@@ -68,28 +114,29 @@ class User extends Entity
         if (isset($this->group_id)) {
             $groupId = $this->group_id;
         }
-
         if (!isset($groupId)) {
             return null;
         }
-
         if (!$groupId) {
             return null;
         }
         return ['Groups' => ['id' => $groupId]];
     }
 
+    /**
+     * Ties the user to the right ACL Group
+     *
+     * @param $user
+     * @return array
+     */
     public function bindNode ($user)
     {
-
         $group_id = Security::decrypt(
             base64_decode(
                 $user['Users']['gid']),
                 Configure::read('encriptionKey'
             )
         );
-
         return ['model' => 'Groups', 'foreign_key' => $group_id];
     }
-
 }

@@ -4,17 +4,15 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * EventManager Entity
+ * RegistrationPaymentsCoupon Entity
  *
- * @property string $id
- * @property string $event_id
- * @property string $users_id
- * @property bool $is_active
+ * @property string $registration_payment_id
+ * @property string $coupon_id
  *
- * @property \App\Model\Entity\Event $event
- * @property \App\Model\Entity\User $user
+ * @property \App\Model\Entity\RegistrationPayment $registration_payment
+ * @property \App\Model\Entity\Coupon $coupon
  */
-class EventManager extends Entity
+class RegistrationPaymentsCoupon extends Entity
 {
 
     /**
@@ -28,11 +26,6 @@ class EventManager extends Entity
      */
     protected $_accessible = [
         '*' => true,
-        'id' => false
+        'registration_payment_id' => false
     ];
-
-    public function setUser(User $user)
-    {
-        $this->user = $user;
-    }
 }
